@@ -23,18 +23,18 @@
             .start-card h1 { font-size: 1.4rem !important; }
             .role-buttons { gap: 8px !important; }
             .role-btn { padding: 8px 12px !important; font-size: 0.8rem !important; }
-            .form-group input, .form-group select { padding: 8px !important; font-size: 0.85rem !important; }
-            .consent-box { padding: 0.8rem !important; }
-            .consent-box label { font-size: 0.8rem !important; }
+            .form-group input { padding: 8px !important; font-size: 0.85rem !important; }
             button { padding: 10px 16px !important; font-size: 0.9rem !important; }
-            .dialogue-panel { padding: 12px !important; }
+            .dialog-panel, .teacher-panel { padding: 12px !important; }
             .speaker-avatar { width: 35px !important; height: 35px !important; font-size: 1.2rem !important; }
             .speaker-name { font-size: 0.85rem !important; }
-            .dialogue-text { font-size: 0.95rem !important; padding: 10px !important; min-height: 60px !important; }
+            .dialog-text { font-size: 0.95rem !important; padding: 10px !important; min-height: 60px !important; }
             .choice-btn { padding: 8px 12px !important; font-size: 0.8rem !important; min-width: 100px !important; }
             .result-card { width: 95% !important; padding: 1.2rem !important; }
-            .result-card h2 { font-size: 1.3rem !important; }
-            .subscale-item { font-size: 0.75rem !important; }
+            .students-table { font-size: 0.75rem; }
+            .students-table th, .students-table td { padding: 6px !important; }
+            .detail-btn { padding: 4px 8px !important; font-size: 0.7rem !important; }
+            .delete-btn { padding: 4px 8px !important; font-size: 0.7rem !important; }
         }
         .start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0f1e, #0f172a); display: flex; align-items: center; justify-content: center; z-index: 100; overflow-y: auto; padding: 20px; }
         .start-card { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border-radius: 32px; padding: 2rem; width: 450px; max-width: 100%; text-align: center; border: 1px solid rgba(139, 92, 246, 0.4); }
@@ -44,62 +44,77 @@
         .role-btn.active { background: linear-gradient(135deg, #c084fc, #818cf8); border: none; }
         .form-group { text-align: left; margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; color: #94a3b8; font-size: 0.85rem; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3); background: rgba(15, 23, 42, 0.8); color: #e2e8f0; font-size: 0.9rem; }
-        .consent-box { background: rgba(15, 23, 42, 0.8); border-radius: 16px; padding: 1rem; margin: 1rem 0; text-align: left; }
-        .consent-box label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .consent-box input { width: 18px; height: 18px; cursor: pointer; }
+        .form-group input { width: 100%; padding: 10px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3); background: rgba(15, 23, 42, 0.8); color: #e2e8f0; font-size: 0.9rem; }
         .error-msg { color: #ef4444; font-size: 0.8rem; margin-top: 10px; }
         .hidden { display: none !important; }
         button { background: linear-gradient(135deg, #c084fc, #818cf8); color: white; border: none; padding: 12px 24px; border-radius: 40px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; }
         button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .game-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; z-index: 50; }
+        .game-screen, .teacher-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; z-index: 50; overflow-y: auto; }
         .background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; z-index: 0; }
         .vignette { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%); z-index: 1; pointer-events: none; }
-        .dialogue-panel { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9)); backdrop-filter: blur(10px); padding: 20px; z-index: 10; border-top: 1px solid rgba(139, 92, 246, 0.3); }
+        .dialog-panel, .teacher-panel { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9)); backdrop-filter: blur(10px); padding: 20px; z-index: 10; border-top: 1px solid rgba(139, 92, 246, 0.3); }
         .speaker-info { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .speaker-avatar { width: 45px; height: 45px; background: linear-gradient(135deg, #c084fc, #818cf8); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .speaker-name { font-size: 1rem; font-weight: bold; color: #c084fc; }
-        .dialogue-text { font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px; padding: 12px; background: rgba(0, 0, 0, 0.4); border-radius: 16px; min-height: 70px; }
+        .dialog-text { font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px; padding: 12px; background: rgba(0, 0, 0, 0.4); border-radius: 16px; min-height: 70px; }
         .choices-container { display: flex; gap: 10px; flex-wrap: wrap; }
         .choice-btn { background: rgba(51, 65, 85, 0.9); border: 1px solid rgba(139, 92, 246, 0.4); padding: 8px 16px; border-radius: 40px; font-size: 0.85rem; color: #e2e8f0; cursor: pointer; width: auto; flex: 1; min-width: 120px; }
         .choice-btn:hover { background: rgba(139, 92, 246, 0.5); transform: translateX(5px); }
         .progress-bar { position: absolute; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #c084fc, #818cf8); transition: width 0.3s; z-index: 20; }
         .typing-cursor { display: inline-block; width: 2px; height: 1.1em; background: #c084fc; margin-left: 2px; animation: blink 1s infinite; }
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+        .teacher-panel { text-align: left; padding: 20px; }
+        .teacher-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(139, 92, 246, 0.3); }
+        .class-code-box { background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 40px; font-family: monospace; font-size: 1.2rem; letter-spacing: 1px; color: #c084fc; display: inline-block; margin-top: 5px; word-break: break-all; }
+        .students-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; }
+        .students-table th, .students-table td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(139, 92, 246, 0.2); }
+        .students-table th { color: #c084fc; font-weight: 600; }
+        .risk-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; }
+        .risk-low { background: #22c55e20; color: #22c55e; border: 1px solid #22c55e; }
+        .risk-medium { background: #eab30820; color: #eab308; border: 1px solid #eab308; }
+        .risk-high { background: #ef444420; color: #ef4444; border: 1px solid #ef4444; }
+        .teacher-buttons { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; margin-bottom: 20px; }
+        .teacher-buttons button { width: auto; padding: 10px 20px; }
+        .detail-btn, .delete-btn { background: rgba(51, 65, 85, 0.8); border: 1px solid rgba(139, 92, 246, 0.4); padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; margin: 2px; }
+        .detail-btn:hover { background: rgba(139, 92, 246, 0.4); }
+        .delete-btn:hover { background: rgba(239, 68, 68, 0.4); border-color: #ef4444; }
         .result-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 200; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
-        .result-card { background: rgba(30, 41, 59, 0.98); border-radius: 32px; padding: 2rem; width: 500px; max-width: 100%; text-align: center; border: 1px solid rgba(139, 92, 246, 0.4); }
-        .risk-meter { background: rgba(0,0,0,0.3); border-radius: 20px; padding: 1rem; margin: 1rem 0; }
-        .risk-bar { height: 20px; background: #2d1b3d; border-radius: 10px; overflow: hidden; margin: 10px 0; }
-        .risk-fill { height: 100%; width: 0%; transition: width 1s ease; }
-        .risk-fill.low { background: #22c55e; }
-        .risk-fill.medium { background: #eab308; }
-        .risk-fill.high { background: #ef4444; }
-        .subscale-scores { text-align: left; margin: 1rem 0; font-size: 0.85rem; max-height: 300px; overflow-y: auto; }
-        .subscale-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(139, 92, 246, 0.2); }
+        .result-card { background: rgba(30, 41, 59, 0.98); border-radius: 32px; padding: 2rem; width: 450px; max-width: 100%; text-align: center; border: 1px solid rgba(139, 92, 246, 0.4); }
+        .simple-result { text-align: center; padding: 40px; }
+        .result-detail { text-align: left; }
+        .result-detail h3 { color: #c084fc; margin: 15px 0 10px; font-size: 1.1rem; }
+        .detail-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(139, 92, 246, 0.2); font-size: 0.9rem; }
+        .close-btn { margin-top: 20px; }
+        .history-classes { margin-top: 20px; border-top: 1px solid rgba(139, 92, 246, 0.2); padding-top: 15px; }
+        .history-item { display: inline-block; background: rgba(51, 65, 85, 0.5); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+        .history-item:hover { background: rgba(139, 92, 246, 0.4); }
+        .history-item.active { background: linear-gradient(135deg, #c084fc, #818cf8); }
+        .class-actions { display: inline-block; margin-left: 10px; }
+        .delete-class-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.7rem; padding: 0 5px; width: auto; display: inline; }
+        .delete-class-btn:hover { color: #ff6666; }
     </style>
 </head>
 <body>
     <div id="startScreen" class="start-screen">
         <div class="start-card">
-            <h1>🏫 Тайна старой школы</h1>
+            <h1>Тайна старой школы</h1>
             <div class="role-buttons">
-                <button id="studentRoleBtn" class="role-btn active">🎓 Ученик</button>
-                <button id="teacherRoleBtn" class="role-btn">📚 Учитель</button>
+                <button id="studentRoleBtn" class="role-btn active">Ученик</button>
+                <button id="teacherRoleBtn" class="role-btn">Учитель</button>
             </div>
             <div id="studentForm">
-                <div class="form-group"><label>ФИО</label><input type="text" id="studentName" placeholder="Иванов Иван Иванович"></div>
-                <div class="form-group"><label>Класс</label><input type="text" id="studentClass" placeholder="9А"></div>
-                <div class="form-group"><label>Возраст</label><input type="number" id="studentAge" placeholder="14"></div>
-                <div class="consent-box"><label><input type="checkbox" id="parentConsent"><span>Я получил(а) согласие родителей на участие</span></label></div>
-                <div class="consent-box"><label><input type="checkbox" id="studentConsent"><span>Я соглашаюсь на участие в исследовании</span></label></div>
+                <div class="form-group"><label>Фамилия</label><input type="text" id="studentLastName" placeholder="Иванов"></div>
+                <div class="form-group"><label>Имя</label><input type="text" id="studentFirstName" placeholder="Иван"></div>
+                <div class="form-group"><label>Отчество</label><input type="text" id="studentMiddleName" placeholder="Иванович"></div>
+                <div class="form-group"><label>Код класса</label><input type="text" id="studentCode" placeholder="Например: 9А-7F3D"></div>
             </div>
             <div id="teacherForm" class="hidden">
                 <div class="form-group"><label>Логин</label><input type="text" id="teacherLogin" placeholder="Введите логин"></div>
                 <div class="form-group"><label>Пароль</label><input type="password" id="teacherPassword" placeholder="Введите пароль"></div>
             </div>
             <div id="errorMsg" class="error-msg"></div>
-            <button id="startBtn" disabled>🚪 Начать игру</button>
+            <button id="startBtn" disabled>Далее</button>
         </div>
     </div>
 
@@ -107,15 +122,247 @@
         <div class="progress-bar" id="progressBar"></div>
         <div class="background-layer" id="backgroundLayer"></div>
         <div class="vignette"></div>
-        <div class="dialogue-panel">
-            <div class="speaker-info"><div class="speaker-avatar" id="speakerAvatar">🗝️</div><div class="speaker-name" id="speakerName">Ты</div></div>
-            <div class="dialogue-text" id="dialogueText"><span id="displayText"></span><span class="typing-cursor"></span></div>
+        <div class="dialog-panel">
+            <div class="speaker-info"><div class="speaker-avatar" id="speakerAvatar">?</div><div class="speaker-name" id="speakerName">Ты</div></div>
+            <div class="dialog-text" id="dialogText"><span id="displayText"></span><span class="typing-cursor"></span></div>
             <div class="choices-container" id="choicesContainer"></div>
         </div>
     </div>
 
+    <div id="teacherScreen" class="teacher-screen hidden">
+        <div class="teacher-panel">
+            <div class="teacher-header">
+                <h2>Личный кабинет учителя</h2>
+                <div>
+                    <div style="font-size:0.8rem; color:#94a3b8;">Текущий класс</div>
+                    <div class="class-code-box" id="classCodeDisplay">—</div>
+                </div>
+            </div>
+            <div class="teacher-buttons">
+                <button id="generateCodeBtn">Создать новый класс</button>
+                <button id="downloadReportBtn">Скачать отчёт</button>
+                <button id="logoutBtn">Выйти</button>
+            </div>
+            
+            <div id="historyClassesContainer" class="history-classes">
+                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:8px;">Мои классы (нажмите для переключения)</div>
+                <div id="historyClassesList"></div>
+            </div>
+            
+            <div id="studentsListContainer">
+                <h3>Ученики класса <span id="currentClassNameSpan"></span></h3>
+                <div style="overflow-x: auto;">
+                    <table class="students-table" id="studentsTable">
+                        <thead>
+                            <tr><th>Фамилия</th><th>Имя</th><th>Отчество</th><th>Код</th><th>Статус</th><th>Риск</th><th>Дата</th><th>Детали</th></tr>
+                        </thead>
+                        <tbody id="studentsTableBody"><tr><td colspan="8" style="text-align:center">Нет учеников</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ========== НАСТРОЙКИ ШКАЛ ==========
+        // ========== ПОДКЛЮЧЕНИЕ К SUPABASE ==========
+        const SUPABASE_URL = 'https://rhjaoewcnbuzfinkioji.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_TUPXNw5gLiqQaHA7cpanqQ_1kHBLVaK';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // ========== ПЕРЕМЕННЫЕ ==========
+        let currentStudent = null;
+        let currentTeacher = null;
+        let diagnosticResults = [];
+        let currentSceneId = "1";
+        let isTyping = false;
+        let typingTimeout = null;
+        
+        // ========== ФУНКЦИИ РАБОТЫ С БАЗОЙ ДАННЫХ ==========
+        
+        async function studentLogin(lastName, firstName, middleName, classCode) {
+            // Проверяем код класса
+            const { data: classData, error: classError } = await supabaseClient
+                .from('classes')
+                .select('*')
+                .eq('class_code', classCode)
+                .maybeSingle();
+            
+            if (classError || !classData) {
+                return { success: false, error: 'Неверный код класса' };
+            }
+            
+            // Ищем ученика
+            let { data: students, error: studentError } = await supabaseClient
+                .from('students')
+                .select('*')
+                .eq('last_name', lastName)
+                .eq('first_name', firstName)
+                .eq('middle_name', middleName)
+                .eq('class_code', classCode);
+            
+            if (studentError) {
+                return { success: false, error: studentError.message };
+            }
+            
+            let student = students?.[0];
+            
+            if (!student) {
+                // Создаём нового ученика
+                const { data: newStudent, error: insertError } = await supabaseClient
+                    .from('students')
+                    .insert([{ 
+                        last_name: lastName, 
+                        first_name: firstName, 
+                        middle_name: middleName, 
+                        class_code: classCode,
+                        parent_consent: true,
+                        student_consent: true
+                    }])
+                    .select()
+                    .single();
+                
+                if (insertError) {
+                    return { success: false, error: insertError.message };
+                }
+                student = newStudent;
+            } else {
+                // Проверяем, не проходил ли уже квест
+                const { data: existingResult } = await supabaseClient
+                    .from('results')
+                    .select('*')
+                    .eq('student_id', student.id)
+                    .maybeSingle();
+                
+                if (existingResult) {
+                    return { success: false, alreadyCompleted: true };
+                }
+            }
+            
+            return { success: true, student: student };
+        }
+        
+        async function teacherLogin(login, password) {
+            const { data, error } = await supabaseClient
+                .from('teachers')
+                .select('*')
+                .eq('login', login)
+                .eq('password', password)
+                .maybeSingle();
+            
+            if (error || !data) {
+                return { success: false, message: 'Неверный логин или пароль' };
+            }
+            
+            const { data: classes } = await supabaseClient
+                .from('classes')
+                .select('*')
+                .eq('teacher_id', data.id);
+            
+            return { 
+                success: true, 
+                teacher: { ...data, classes: classes || [] }
+            };
+        }
+        
+        async function saveStudentResult(studentId, results) {
+            const { error } = await supabaseClient
+                .from('results')
+                .insert([{
+                    student_id: studentId,
+                    overall_risk_percent: results.overallRiskPercent,
+                    risk_level: results.riskLevel,
+                    scale_results: results.scaleResults,
+                    answers: results.answers
+                }]);
+            
+            return !error;
+        }
+        
+        async function getStudentsWithResults(classCode) {
+            const { data: students, error: studentsError } = await supabaseClient
+                .from('students')
+                .select('*')
+                .eq('class_code', classCode);
+            
+            if (studentsError) {
+                return { success: false, error: studentsError.message };
+            }
+            
+            const studentsWithResults = [];
+            for (const student of students) {
+                const { data: results } = await supabaseClient
+                    .from('results')
+                    .select('*')
+                    .eq('student_id', student.id)
+                    .maybeSingle();
+                
+                studentsWithResults.push({
+                    ...student,
+                    result: results || null
+                });
+            }
+            
+            return { success: true, students: studentsWithResults };
+        }
+        
+        async function createClass(teacherId, className) {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            const classCode = `${className}-${code}`;
+            
+            const { data, error } = await supabaseClient
+                .from('classes')
+                .insert([{
+                    teacher_id: teacherId,
+                    class_name: className,
+                    class_code: classCode
+                }])
+                .select()
+                .single();
+            
+            if (error) {
+                return { success: false, error: error.message };
+            }
+            return { success: true, class: data };
+        }
+        
+        async function deleteClass(classId) {
+            // Проверяем, есть ли ученики в этом классе
+            const { data: classData } = await supabaseClient
+                .from('classes')
+                .select('class_code')
+                .eq('id', classId)
+                .single();
+            
+            if (classData) {
+                const { data: students } = await supabaseClient
+                    .from('students')
+                    .select('id')
+                    .eq('class_code', classData.class_code);
+                
+                if (students && students.length > 0) {
+                    // Удаляем результаты учеников
+                    for (const student of students) {
+                        await supabaseClient.from('results').delete().eq('student_id', student.id);
+                    }
+                    // Удаляем учеников
+                    await supabaseClient.from('students').delete().eq('class_code', classData.class_code);
+                }
+            }
+            
+            // Удаляем класс
+            const { error } = await supabaseClient
+                .from('classes')
+                .delete()
+                .eq('id', classId);
+            
+            return !error;
+        }
+        
+        // ========== ЛОГИКА КВЕСТА ==========
+        
         const scalesConfig = {
             "Демонстративность": { coef: 1.2, maxVal: 6 },
             "Аффективность": { coef: 1.1, maxVal: 6.6 },
@@ -127,156 +374,46 @@
             "Временная перспектива": { coef: 1.1, maxVal: 6.6 },
             "Антисуицидальный фактор": { coef: 3.2, maxVal: 6.4 }
         };
-
-        // ========== СООТВЕТСТВИЕ СЦЕН ШКАЛАМ ==========
+        
         const sceneScales = {
             "2": ["Аффективность", "Уникальность"],
             "4A": ["Демонстративность", "Уникальность", "Временная перспектива"],
-            "4B": ["Демонстративность", "Уникальность", "Временная перспектива"],
-            "6": ["Аффективность"],
-            "8": ["Демонстративность", "Аффективность"],
-            "10": ["Аффективность"],
-            "12.1": ["Аффективность"],
-            "14": ["Аффективность"],
-            "16": ["Демонстративность", "Уникальность"],
-            "18A": ["Демонстративность", "Уникальность", "Социальный пессимизм"],
-            "18B": ["Демонстративность", "Уникальность", "Социальный пессимизм"],
-            "19": ["Социальный пессимизм"],
-            "21": ["Демонстративность", "Уникальность", "Временная перспектива"],
-            "23": ["Несостоятельность", "Временная перспектива"],
-            "24": ["Несостоятельность", "Временная перспектива"],
-            "25": ["Несостоятельность"],
-            "27": ["Несостоятельность"],
-            "29A": ["Социальный пессимизм"],
-            "29B": ["Социальный пессимизм"],
-            "30": ["Социальный пессимизм"],
-            "31": ["Социальный пессимизм"],
-            "32": ["Слом культурных барьеров"],
-            "33": ["Слом культурных барьеров"],
-            "34": ["Максимализм"],
-            "35": ["Антисуицидальный фактор"],
-            "36": ["Социальный пессимизм"],
-            "37.1": ["Слом культурных барьеров"],
-            "39": ["Максимализм"],
-            "41": ["Временная перспектива"],
-            "43A": ["Временная перспектива"],
-            "43B": ["Временная перспектива"],
-            "44": ["Антисуицидальный фактор"],
-            "46A": ["Несостоятельность"],
-            "46B": ["Несостоятельность"]
+            "4B": ["Демонстративность", "Уникальность", "Временная перспектива"]
         };
-
-        let playerData = { role: 'student', name: '', class: '', age: '' };
-        let diagnosticResults = [];
-        let currentSceneId = "1";
-        let isTyping = false;
-        let typingTimeout = null;
-
-        // ========== ГРАДИЕНТЫ ДЛЯ ФОНОВ (ЕСЛИ НЕТ КАРТИНОК) ==========
+        
         const gradients = {
             school: 'linear-gradient(135deg, #1a1a2e, #16213e)',
             corridor: 'linear-gradient(135deg, #1a0f0f, #2d1a1a)',
             stairs: 'linear-gradient(135deg, #0f0c29, #302b63)',
             dead_end: 'linear-gradient(135deg, #000000, #1a0a2e)',
-            notebook: 'linear-gradient(135deg, #2a1a0a, #3a2a1a)',
-            fork: 'linear-gradient(135deg, #1a2a3e, #0f1f2e)',
-            graffiti: 'linear-gradient(135deg, #1a1a2e, #16213e)',
-            whisper: 'linear-gradient(135deg, #0a0a1a, #1a0a2e)',
-            guardian: 'linear-gradient(135deg, #1a0a3e, #2a1a4e)',
-            backpack: 'linear-gradient(135deg, #2a1a0a, #1a0f05)',
-            steps: 'linear-gradient(135deg, #1a0000, #2a0000)',
-            mirror_room: 'linear-gradient(135deg, #1a2a3e, #0f1f2e)',
-            riddle: 'linear-gradient(135deg, #1a0a3e, #2a1a4e)',
-            photo: 'linear-gradient(135deg, #2a2a1a, #1a1a0f)',
-            three_doors: 'linear-gradient(135deg, #1a1a2e, #0f0f1a)',
-            dark_room: 'linear-gradient(135deg, #000000, #0a0a1a)',
-            steps_behind: 'linear-gradient(135deg, #1a0a0a, #2a0a0a)',
-            other_students: 'linear-gradient(135deg, #1a2a3e, #0f1f2e)',
-            mirror_wall: 'linear-gradient(135deg, #1a2a3e, #0f1f2e)',
-            legend: 'linear-gradient(135deg, #1a0a3e, #2a1a4e)',
-            dead_end2: 'linear-gradient(135deg, #000000, #1a0a2e)',
-            locked_door: 'linear-gradient(135deg, #1a0f0f, #2d1a1a)',
-            fail: 'linear-gradient(135deg, #1a0000, #2a0000)',
-            music_door: 'linear-gradient(135deg, #1a1a2e, #0f0f1a)',
-            future: 'linear-gradient(135deg, #1a2a3e, #0f1f2e)',
-            stone: 'linear-gradient(135deg, #c084fc20, #818cf820)',
-            exit: 'linear-gradient(135deg, #0f0f1a, #1a1a2e)',
-            portal: 'linear-gradient(135deg, #1a0a3e, #2a1a4e)'
+            notebook: 'linear-gradient(135deg, #2a1a0a, #3a2a1a)'
         };
-
-        // ========== ВСЕ СЦЕНЫ  ==========
+        
         const scenes = {
-            "1": { id: "1", text: "Ты стоишь у входа в старую школу. Изнутри доносится странный шум.", choices: [], next: { A: "2", B: "2" }, speaker: "🗝️", speakerName: "...", bg: "school", diagnostic: null, noChoice: true },
-            "2": { id: "2", text: "Ты заходишь внутрь. Внезапно за спиной хлопает дверь. Сердце начинает биться быстрее.", choices: ["Взять себя в руки и идти дальше", "Застыть на месте от неожиданности"], next: { A: "3A", B: "3B" }, speaker: "🗝️", speakerName: "...", bg: "corridor", diagnostic: "2" },
-            "3A": { id: "3A", text: "Ты идёшь по тёмному коридору. Справа - лестница вниз, слева - дверь.", choices: ["Спуститься по лестнице", "Открыть дверь"], next: { A: "4A", B: "4B" }, speaker: "🗝️", speakerName: "...", bg: "stairs", diagnostic: null },
-            "3B": { id: "3B", text: "Придя в себя, ты идёшь по тёмному коридору. Справа - лестница вниз, слева - дверь.", choices: ["Спуститься по лестнице", "Открыть дверь"], next: { A: "4A", B: "4B" }, speaker: "🗝️", speakerName: "...", bg: "stairs", diagnostic: null },
-            "4A": { id: "4A", text: "Ты спускаешься по лестнице и попадаешь в тупик. Выхода не видно.", choices: ["Продолжать искать выход", "Сесть на ступеньку и ждать"], next: { A: "5", B: "5" }, speaker: "🗝️", speakerName: "...", bg: "dead_end", diagnostic: "4A" },
-            "4B": { id: "4B", text: "Открыв дверь ты видишь лестницу, спускаешься по ней и попадаешь в тупик. Выхода не видно.", choices: ["Продолжать искать выход", "Сесть на ступеньку и ждать"], next: { A: "5", B: "5" }, speaker: "🗝️", speakerName: "...", bg: "dead_end", diagnostic: "4B" },
-            "5": { id: "5", text: "На полу лежит старая тетрадь.", choices: [], next: { A: "6", B: "6" }, speaker: "🗝️", speakerName: "...", bg: "notebook", diagnostic: null, noChoice: true },
-            "6": { id: "6", text: "Ты читаешь записи. Там написаны чьи-то грустные мысли. Тебя внезапно накрывает волна грусти.", choices: ["Закрыть тетрадь", "Продолжать читать, даже если становится тяжело"], next: { A: "7", B: "7" }, speaker: "🗝️", speakerName: "...", bg: "notebook", diagnostic: "6" },
-            "7": { id: "7", text: "Ты поднимаешь голову и видишь как коридор раздваивается. Слева - темно, справа - слабый свет.", choices: ["Пойти на свет", "Пойти в темноту"], next: { A: "8", B: "8" }, speaker: "🗝️", speakerName: "...", bg: "fork", diagnostic: null },
-            "8": { id: "8", text: "На стене ты видишь надпись «ЭТО ТЫ ВИНОВАТ».", choices: ["Пожать плечами и пойти дальше", "Остановиться и долго думать, почему кто-то вообще мог так написать"], next: { A: "9", B: "9" }, speaker: "🗝️", speakerName: "...", bg: "graffiti", diagnostic: "8" },
-             "9": { id: "9", text: "Ты слышишь шёпот: «Помоги мне...». И идёшь на голос.", choices: [], next: { A: "10", B: "10" }, speaker: "🗝️", speakerName: "...", bg: "whisper", diagnostic: null, noChoice: true },
-            "10": { id: "10", text: "По пути ты вспоминаешь случай, из-за которого тебе до сих пор стыдно.", choices: ["Ну с кем не бывает", "Продолжать думать об этом и винить себя"], next: { A: "11", B: "11" }, speaker: "🗝️", speakerName: "...", bg: "whisper", diagnostic: "10" },
-            "11": { id: "11", text: "Перед тобой появляется светящаяся фигура. Это Хранитель подземелья.", choices: ["Кто ты?", "Молчать и ждать, что он скажет"], next: { A: "12", B: "12" }, speaker: "🗝️", speakerName: "...", bg: "guardian", diagnostic: null },
-            "12": { id: "12", text: "Не все, кто заходят сюда, находят выход. Некоторые остаются навсегда", choices: [], next: { A: "12.1", B: "12.1" }, speaker: "✨", speakerName: "Хранитель", bg: "guardian", diagnostic: null, noChoice: true },
-            "12.1": { id: "12.1", text: "Эти слова застревают в голове. Ты не можешь перестать о них думать.", choices: ["Переключиться на поиск выхода", "Продолжать прокручивать его слова в голове"], next: { A: "13", B: "13" }, speaker: "🗝️", speakerName: "...", bg: "guardian", diagnostic: "12.1" },
-            "13": { id: "13", text: "Ты находишь старый рюкзак.", choices: ["Посмотреть что внутри", "Не трогать"], next: { A: "14", B: "14" }, speaker: "🗝️", speakerName: "...", bg: "backpack", diagnostic: null },
-            "14": { id: "14", text: "За спиной слышатся пугающие шаги", choices: ["Сначала оценить ситуацию, потом действовать", "Сразу бежать, не думая"], next: { A: "15", B: "15" }, speaker: "🗝️", speakerName: "...", bg: "steps", diagnostic: "14" },
-            "15": { id: "15", text: "Ты входишь в комнату и видишь Хранителя", choices: ["Снова ты", "Ты меня преследуешь?"], next: { A: "16", B: "16" }, speaker: "🗝️", speakerName: "...", bg: "mirror_room", diagnostic: null },
-            "16": { id: "16", text: "Ты пытаешься объяснить Хранителю, зачем пришёл, но создается впечатление, что он не слушает.", choices: ["Объяснить снова", "Замолчать и уйти"], next: { A: "17A", B: "17B" }, speaker: "🗝️", speakerName: "...", bg: "mirror_room", diagnostic: "16" },
-            "17A": { id: "17A", text: "Отгадай загадку: «Что всегда растёт, но никогда не становится больше?»", choices: ["Попробовать отгадать", "Сказать, что не знаешь"], next: { A: "17.1", B: "17.1" }, speaker: "✨", speakerName: "Хранитель", bg: "riddle", diagnostic: null },
-            "17B": { id: "17B", text: "Не уходи, лучше отгадай загадку: «Что всегда растёт, но никогда не становится больше?»", choices: ["Попробовать отгадать", "Сказать, что не знаешь"], next: { A: "17.1", B: "17.1" }, speaker: "✨", speakerName: "Хранитель", bg: "riddle", diagnostic: null },
-            "17.1": { id: "17.1", text: "Ты думаешь и отвечаешь: «Дыра?»", choices: [], next: { A: "18A", B: "18B" }, speaker: "🗝️", speakerName: "...", bg: "riddle", diagnostic: null, noChoice: true },
-            "18A": { id: "18A", text: "Ха-ха. Неплохо, но нет. Правильный ответ - знания. Знаешь, некоторые обижаются, когда у них не получается отгадать. А ты как?", choices: ["Ничего страшного, это просто загадка", "Мне кажется, что ты специально загадал такую сложную"], next: { A: "19", B: "19" }, speaker: "✨", speakerName: "Хранитель", bg: "riddle", diagnostic: "18A" },
-            "18B": { id: "18B", text: "Но ты ведь даже не попробовал, боишься, что не угадаешь?", choices: ["Нет, это же просто загадка, просто не хочется", "Мне кажется, что ты специально загадаешь сложную"], next: { A: "19", B: "19" }, speaker: "✨", speakerName: "Хранитель", bg: "riddle", diagnostic: "18B" },
-            "19": { id: "19", text: "Хранитель предлагает помощь. Он очень дружелюбен.", choices: ["Довериться", "Быть настороже"], next: { A: "20", B: "20" }, speaker: "🗝️", speakerName: "...", bg: "guardian", diagnostic: "19" },
-            "20": { id: "20", text: "Ты находишь старую фотографию учеников прошлых лет.", choices: ["Положить в карман", "Оставить на месте"], next: { A: "21", B: "21" }, speaker: "🗝️", speakerName: "...", bg: "photo", diagnostic: null },
-            "21": { id: "21", text: "Мало кто проходил здесь до тебя.", choices: ["Это необычно", "Ну да, ведь моя история отличается от всех"], next: { A: "22", B: "22" }, speaker: "✨", speakerName: "Хранитель", bg: "photo", diagnostic: "21" },
-            "22": { id: "22", text: "Впереди - три двери. За одной из них выход.", choices: ["Выбрать наугад", "Подслушать, что происходит за каждой дверью"], next: { A: "23", B: "23" }, speaker: "🗝️", speakerName: "...", bg: "three_doors", diagnostic: null },
-            "23": { id: "23", text: "Ты попадаешь в тёмную комнату. В голову лезут мрачные мысли.", choices: ["Они приходят и уходят, это нормально", "Они не отпускают меня"], next: { A: "24", B: "24" }, speaker: "🗝️", speakerName: "...", bg: "dark_room", diagnostic: "23" },
-            "24": { id: "24", text: "Вдруг ты вспоминаешь, что загаданное тобой желание так и не сбылось.", choices: ["Верю, что все еще впереди", "Не все наши желания могут сбываться"], next: { A: "25", B: "25" }, speaker: "🗝️", speakerName: "...", bg: "dark_room", diagnostic: "24" },
-            "25": { id: "25", text: "Неожиданно включается свет и на стене ты видишь математические вычисления, и понимаешь, что раньше учёба давалась легче.", choices: ["Ничего страшного, бывают периоды", "Я стал хуже, у меня не получается"], next: { A: "26", B: "26" }, speaker: "🗝️", speakerName: "...", bg: "dark_room", diagnostic: "25" },
-            "26": { id: "26", text: "Ты слышишь шаги за спиной.", choices: ["Обернуться", "Ускорить шаг"], next: { A: "27", B: "27" }, speaker: "🗝️", speakerName: "...", bg: "steps_behind", diagnostic: null },
-            "27": { id: "27", text: "Ты встречаешь учеников, которые тоже спустились в подземелье, но понимаешь, что задания они выполняют быстрее и лучше тебя.", choices: ["У каждого свой путь", "У других всегда получается все лучше, чем у меня"], next: { A: "28", B: "28" }, speaker: "🗝️", speakerName: "...", bg: "other_students", diagnostic: "27" },
-            "28": { id: "28", text: "На стене висит старое зеркало. Ты смотришь в него.", choices: ["Улыбнуться своему отражению", "Отвернуться"], next: { A: "29B", B: "29A" }, speaker: "🗝️", speakerName: "...", bg: "mirror_wall", diagnostic: null },
-            "29A": { id: "29A", text: "Знаешь, некоторые говорят, что зеркала показывают не только лицо, но и удачу. Говорят, кому не везёт, тот отворачивается от зеркала", choices: ["Мне везёт в жизни, это просто предрассудки", "Может, поэтому мне и не везёт..."], next: { A: "30", B: "30" }, speaker: "✨", speakerName: "Хранитель", bg: "mirror_wall", diagnostic: "29A" },
-            "29B": { id: "29B", text: "Ты улыбнулся. Это хороший знак. Говорят, кто улыбается своему отражению, тому удача сама идёт в руки. А ты веришь в удачу?", choices: ["Да, мне в жизни везёт", "Не особо, мне скорее не везёт"], next: { A: "30", B: "30" }, speaker: "✨", speakerName: "Хранитель", bg: "mirror_wall", diagnostic: "29B" },
-            "30": { id: "30", text: "Ты вообще задумывался почему я тебе помогаю?", choices: ["Думаю, ты просто хороший человек", "Потому что хочешь получить что-то взамен"], next: { A: "31", B: "31" }, speaker: "✨", speakerName: "Хранитель", bg: "legend", diagnostic: "30" },
-            "31": { id: "31", text: "Нет, я просто пытаюсь искупить свою вину. Однажды я украл очень важную вещь, за что и попал в подземелье.", choices: ["Действительно, тебе не стоило так делать", "Но ведь это не только твоя вина, хозяину следовало следить лучше за своей вещью"], next: { A: "32", B: "32" }, speaker: "✨", speakerName: "Хранитель", bg: "legend", diagnostic: "31" },
-            "32": { id: "32", text: "Хранитель рассказывает легенду о герое, который пожертвовал собой, чтобы искупить свои грехи.", choices: ["Это было глупо, можно было найти другой способ", "В этом есть что-то благородное"], next: { A: "33", B: "33" }, speaker: "🗝️", speakerName: "...", bg: "legend", diagnostic: "32" },
-            "33": { id: "33", text: "Вообще я считаю, что только взрослый человек может принять решение уйти из жизни. А ты что думаешь?", choices: ["Я считаю, что такие решения нельзя принимать в одиночку", "Наверное, в этом есть смысл, каждый сам решает"], next: { A: "34", B: "34" }, speaker: "✨", speakerName: "Хранитель", bg: "legend", diagnostic: "33" },
-            "34": { id: "34", text: "А были у тебя ситуации, когда казалось, что выхода нет?", choices: ["Я считаю, что выход есть всегда", "Да, было очень тяжело"], next: { A: "35", B: "35" }, speaker: "✨", speakerName: "Хранитель", bg: "dead_end2", diagnostic: "34" },
-            "35": { id: "35", text: "Несмотря на все проблемы, я доволен своей жизнью, а ты?", choices: ["Да, в целом доволен", "Нет, не доволен"], next: { A: "36", B: "36" }, speaker: "✨", speakerName: "Хранитель", bg: "dark_room", diagnostic: "35" },
-            "36": { id: "36", text: "Как ты думаешь, большинство людей добиваются успеха честно?", choices: ["Да, большинство честные", "Нет, многие добиваются нечестно"], next: { A: "37", B: "37" }, speaker: "✨", speakerName: "Хранитель", bg: "future", diagnostic: "36" },
-            "37": { id: "37", text: "Ты заходишь в тупик. Единственный путь назад - туда, откуда пришёл.", choices: [], next: { A: "37.1", B: "37.1" }, speaker: "🗝️", speakerName: "...", bg: "dead_end2", diagnostic: null, noChoice: true },
-            "37.1": { id: "37.1", text: "Что будешь делать? Вернёшься или поищешь другой выход?", choices: ["Вернуться, пока не поздно", "Искать другой выход, даже если это опасно"], next: { A: "38", B: "38" }, speaker: "🗝️", speakerName: "...", bg: "dead_end2", diagnostic: "37.1" },
-            "38": { id: "38", text: "Вы идёте и натыкаетесь на запертую дверь.", choices: [], next: { A: "38.1", B: "38.1" }, speaker: "🗝️", speakerName: "...", bg: "locked_door", diagnostic: null, noChoice: true },
-            "38.1": { id: "38.1", text: "Чтобы открыть её, нужно пройти испытание.", choices: [], next: { A: "39", B: "39" }, speaker: "✨", speakerName: "Хранитель", bg: "locked_door", diagnostic: null, noChoice: true },
-            "39": { id: "39", text: "Ты пытаешься, но у тебя не получается. Хранитель смотрит на тебя и предлагает попробовать ещё раз.", choices: ["Попробовать снова", "Всё, больше не буду пытаться"], next: { A: "40", B: "40" }, speaker: "🗝️", speakerName: "...", bg: "fail", diagnostic: "39" },
-            "40": { id: "40", text: "Вдруг ты слышишь тихую музыку, доносящуюся из-за двери.", choices: ["Не обращать внимания", "Прислушаться"], next: { A: "41", B: "41" }, speaker: "🗝️", speakerName: "...", bg: "music_door", diagnostic: null },
-            "41": { id: "41", text: "Какая красивая музыка, будто уносит в светлое будущее. А какой ты видишь свою жизнь через несколько лет?", choices: ["У меня столько всего задуманного", "Я предпочитаю не загадывать на будущее"], next: { A: "42", B: "42" }, speaker: "✨", speakerName: "Хранитель", bg: "future", diagnostic: "41" },
-            "42": { id: "42", text: "Хранитель протягивает тебе светящийся камень.", choices: ["Взять", "Отказаться"], next: { A: "43A", B: "43B" }, speaker: "🗝️", speakerName: "...", bg: "stone", diagnostic: null },
-            "43A": { id: "43A", text: "Этот камень поможет тебе во всех твоих начинаниях. Ты решил, что будешь делать, когда выберешься отсюда?", choices: ["У меня есть планы", "Сложно ответить, не знаю"], next: { A: "44", B: "44" }, speaker: "✨", speakerName: "Хранитель", bg: "exit", diagnostic: "43A" },
-            "43B": { id: "43B", text: "Этот камень помог бы тебе во всех твоих начинаниях. Ты решил, что будешь делать, когда выберешься отсюда?", choices: ["У меня есть планы", "Сложно ответить, не знаю"], next: { A: "44", B: "44" }, speaker: "✨", speakerName: "Хранитель", bg: "exit", diagnostic: "43B" },
-            "44": { id: "44", text: "Есть ли кто-то, ради кого ты готов изменить все свои планы?", choices: ["Да, есть", "Нет, если я решил, то твёрдо"], next: { A: "45", B: "45" }, speaker: "✨", speakerName: "Хранитель", bg: "exit", diagnostic: "44" },
-            "45": { id: "45", text: "Выход уже близко. Ты чувствуешь свежий воздух.", choices: ["Ускорить шаг", "Оглянуться перед выходом"], next: { A: "46B", B: "46A" }, speaker: "🗝️", speakerName: "...", bg: "exit", diagnostic: null },
-            "46A": { id: "46A", text: "Если вдруг тебе станет тяжело, ты знаешь где меня искать.", choices: ["Спасибо, в случае чего обязательно обращусь", "Спасибо, но я справлюсь сам"], next: { A: "47", B: "47" }, speaker: "✨", speakerName: "Хранитель", bg: "exit", diagnostic: "46A" },
-            "46B": { id: "46B", text: "Подожди, запомни, если вдруг тебе станет тяжело, ты знаешь где меня искать.", choices: ["Спасибо, в случае чего обязательно обращусь", "Спасибо, но я справлюсь сам"], next: { A: "47", B: "47" }, speaker: "✨", speakerName: "Хранитель", bg: "exit", diagnostic: "46B" },
-            // Добавь остальные сцены (с 9 по 47) по аналогии...
-            "47": { id: "47", text: "Ты прошёл все испытания. Поздравляю!", choices: [], next: { A: "end", B: "end" }, speaker: "🗝️", speakerName: "...", bg: "portal", diagnostic: null, noChoice: true }
+            "1": { id: "1", text: "Ты стоишь у входа в старую школу. Изнутри доносится странный шум.", choices: [], next: { A: "2", B: "2" }, speaker: "?", speakerName: "Ты", bg: "school", diagnostic: null, noChoice: true },
+            "2": { id: "2", text: "Ты заходишь внутрь. Внезапно за спиной хлопает дверь. Сердце начинает биться быстрее.", choices: ["Взять себя в руки и идти дальше", "Застыть на месте от неожиданности"], next: { A: "3A", B: "3B" }, speaker: "?", speakerName: "Ты", bg: "corridor", diagnostic: "2" },
+            "3A": { id: "3A", text: "Ты идёшь по тёмному коридору. Справа - лестница вниз, слева - дверь.", choices: ["Спуститься по лестнице", "Открыть дверь"], next: { A: "4A", B: "4B" }, speaker: "?", speakerName: "Ты", bg: "stairs", diagnostic: null },
+            "3B": { id: "3B", text: "Придя в себя, ты идёшь по тёмному коридору. Справа - лестница вниз, слева - дверь.", choices: ["Спуститься по лестнице", "Открыть дверь"], next: { A: "4A", B: "4B" }, speaker: "?", speakerName: "Ты", bg: "stairs", diagnostic: null },
+            "4A": { id: "4A", text: "Ты спускаешься по лестнице и попадаешь в тупик. Выхода не видно.", choices: ["Продолжать искать выход", "Сесть на ступеньку и ждать"], next: { A: "5", B: "5" }, speaker: "?", speakerName: "Ты", bg: "dead_end", diagnostic: "4A" },
+            "4B": { id: "4B", text: "Открыв дверь ты видишь лестницу, спускаешься по ней и попадаешь в тупик. Выхода не видно.", choices: ["Продолжать искать выход", "Сесть на ступеньку и ждать"], next: { A: "5", B: "5" }, speaker: "?", speakerName: "Ты", bg: "dead_end", diagnostic: "4B" },
+            "5": { id: "5", text: "На полу лежит старая тетрадь.", choices: [], next: { A: "end", B: "end" }, speaker: "?", speakerName: "Ты", bg: "notebook", diagnostic: null, noChoice: true }
         };
-       
-
+        
         function setBackground(bgKey) {
             const bgDiv = document.getElementById('backgroundLayer');
-            const imgPath = `images/backgrounds/bg_${bgKey}.jpg`;
+            const imgPath = 'images/backgrounds/bg_' + bgKey + '.jpg';
             const img = new Image();
-            img.onload = () => { bgDiv.style.backgroundImage = `url('${imgPath}')`; bgDiv.style.backgroundSize = 'cover'; bgDiv.style.backgroundPosition = 'center'; };
-            img.onerror = () => { bgDiv.style.background = gradients[bgKey] || 'linear-gradient(135deg, #0a0f1e, #0f172a)'; };
+            img.onload = function() { 
+                bgDiv.style.backgroundImage = 'url(' + imgPath + ')'; 
+                bgDiv.style.backgroundSize = 'cover'; 
+                bgDiv.style.backgroundPosition = 'center'; 
+            };
+            img.onerror = function() { 
+                bgDiv.style.background = gradients[bgKey] || 'linear-gradient(135deg, #0a0f1e, #0f172a)'; 
+            };
             img.src = imgPath;
         }
-
+        
         function typeText(text, element, callback) {
             if (typingTimeout) clearTimeout(typingTimeout);
             if (isTyping) return;
@@ -284,12 +421,18 @@
             let i = 0;
             element.innerHTML = '';
             function type() {
-                if (i < text.length) { element.innerHTML += text[i]; i++; typingTimeout = setTimeout(type, 35); }
-                else { isTyping = false; if (callback) callback(); }
+                if (i < text.length) { 
+                    element.innerHTML += text[i]; 
+                    i++; 
+                    typingTimeout = setTimeout(type, 35); 
+                } else { 
+                    isTyping = false; 
+                    if (callback) callback(); 
+                }
             }
             type();
         }
-
+        
         function loadScene() {
             const scene = scenes[currentSceneId];
             if (!scene || currentSceneId === 'end') { finishGame(); return; }
@@ -299,16 +442,22 @@
             const displaySpan = document.getElementById('displayText');
             const container = document.getElementById('choicesContainer');
             container.innerHTML = '';
-            typeText(scene.text, displaySpan, () => {
+            typeText(scene.text, displaySpan, function() {
                 if (scene.noChoice || scene.choices.length === 0) {
-                    setTimeout(() => { if (scene.next && scene.next.A) { currentSceneId = scene.next.A; loadScene(); } }, 1500);
+                    setTimeout(function() { 
+                        if (scene.next && scene.next.A) { 
+                            currentSceneId = scene.next.A; 
+                            loadScene(); 
+                        } 
+                    }, 1500);
                 } else {
-                    scene.choices.forEach((choice, idx) => {
+                    for (let idx = 0; idx < scene.choices.length; idx++) {
+                        const choice = scene.choices[idx];
+                        const choiceKey = idx === 0 ? 'A' : 'B';
                         const btn = document.createElement('button');
                         btn.className = 'choice-btn';
                         btn.innerText = choice;
-                        const choiceKey = idx === 0 ? 'A' : 'B';
-                        btn.onclick = () => {
+                        btn.onclick = function() {
                             if (isTyping) return;
                             const score = (choiceKey === 'A' ? 0 : 1);
                             if (scene.diagnostic) {
@@ -319,24 +468,24 @@
                             else { currentSceneId = nextSceneId; loadScene(); }
                         };
                         container.appendChild(btn);
-                    });
+                    }
                 }
             });
-            const sceneIds = Object.keys(scenes).filter(k => !k.includes('end'));
+            const sceneIds = Object.keys(scenes).filter(function(k) { return !k.includes('end'); });
             const currentIndex = sceneIds.indexOf(currentSceneId);
-            const progress = ((currentIndex + 1) / sceneIds.length) * 100;
-            document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
+            if (currentIndex !== -1) {
+                const progress = ((currentIndex + 1) / sceneIds.length) * 100;
+                document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
+            }
         }
-
-        function calculateRisk() {
+        
+        function calculateFullResults(results) {
             const rawScores = {};
             for (let scale of Object.keys(scalesConfig)) rawScores[scale] = 0;
-            for (let res of diagnosticResults) {
+            for (let res of results) {
                 const scalesList = sceneScales[res.sceneCode];
                 if (scalesList) {
-                    for (let scale of scalesList) {
-                        rawScores[scale] += res.score;
-                    }
+                    for (let scale of scalesList) rawScores[scale] += res.score;
                 }
             }
             const scaleResults = {};
@@ -345,113 +494,293 @@
             for (let [scale, config] of Object.entries(scalesConfig)) {
                 const rawScore = rawScores[scale];
                 const finalValue = (rawScore * config.coef).toFixed(1);
-                const maxValue = config.maxVal;
-                const percentOfMax = (parseFloat(finalValue) / maxValue) * 100;
-                scaleResults[scale] = { finalValue: parseFloat(finalValue), maxValue: maxValue, percentOfMax: Math.round(percentOfMax), rawScore: rawScore };
+                const percentOfMax = (parseFloat(finalValue) / config.maxVal) * 100;
+                scaleResults[scale] = { finalValue: parseFloat(finalValue), maxValue: config.maxVal, percentOfMax: Math.round(percentOfMax) };
                 totalPercentSum += percentOfMax;
                 scaleCount++;
             }
             const overallRiskPercent = Math.round(totalPercentSum / scaleCount);
-            let riskLevel = '', riskColor = '';
-            if (overallRiskPercent < 30) { riskLevel = 'Низкий'; riskColor = 'low'; }
-            else if (overallRiskPercent < 60) { riskLevel = 'Средний'; riskColor = 'medium'; }
-            else { riskLevel = 'Высокий'; riskColor = 'high'; }
-            return { overallRiskPercent, riskLevel, riskColor, scaleResults };
+            let riskLevel = '';
+            if (overallRiskPercent < 30) riskLevel = 'Низкий';
+            else if (overallRiskPercent < 60) riskLevel = 'Средний';
+            else riskLevel = 'Высокий';
+            return { overallRiskPercent: overallRiskPercent, riskLevel: riskLevel, scaleResults: scaleResults };
         }
-
-        function finishGame() {
-            const risk = calculateRisk();
-            let subscaleHtml = '';
-            for (let [scale, data] of Object.entries(risk.scaleResults)) {
-                subscaleHtml += `<div class="subscale-item"><span>${scale}</span><span>${data.finalValue} из ${data.maxValue} (${data.percentOfMax}%)</span></div>`;
+        
+        async function finishGame() {
+            if (currentStudent) {
+                const fullResults = calculateFullResults(diagnosticResults);
+                await saveStudentResult(currentStudent.id, {
+                    overallRiskPercent: fullResults.overallRiskPercent,
+                    riskLevel: fullResults.riskLevel,
+                    scaleResults: fullResults.scaleResults,
+                    answers: diagnosticResults
+                });
             }
-            const resultHtml = `<div class="result-overlay" id="resultOverlay"><div class="result-card"><h2>🏆 Квест пройден!</h2><p style="margin:1rem 0;">Спасибо за прохождение, ${playerData.name || 'игрок'}!</p><div class="risk-meter"><h3>📊 Уровень риска: ${risk.riskLevel}</h3><div class="risk-bar"><div class="risk-fill ${risk.riskColor}" style="width:${risk.overallRiskPercent}%"></div></div><p>${risk.overallRiskPercent}%</p></div><details><summary style="cursor:pointer; margin:1rem 0; color:#c084fc;">📋 Результаты по шкалам</summary><div class="subscale-scores">${subscaleHtml}</div></details><button id="downloadDataBtn">📥 Скачать данные (JSON)</button><button id="restartBtn" style="margin-top:10px;">🔄 Начать заново</button></div></div>`;
-            document.body.insertAdjacentHTML('beforeend', resultHtml);
-            const exportData = { player: playerData, timestamp: new Date().toISOString(), sessionId: 'session_' + Date.now(), diagnosticResults: diagnosticResults, overallRiskPercent: risk.overallRiskPercent, riskLevel: risk.riskLevel, scaleResults: risk.scaleResults };
-            document.getElementById('downloadDataBtn').onclick = () => { const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `quest_data_${playerData.name || 'player'}_${Date.now()}.json`; a.click(); URL.revokeObjectURL(url); };
-            document.getElementById('restartBtn').onclick = () => location.reload();
+            document.getElementById('gameScreen').classList.add('hidden');
+            const simpleResultHtml = '<div class="result-overlay" id="resultOverlay"><div class="result-card simple-result"><h2>Квест пройден!</h2><p style="margin-top:10px;">Спасибо за прохождение!</p></div></div>';
+            document.body.insertAdjacentHTML('beforeend', simpleResultHtml);
+            setTimeout(function() { 
+                const overlay = document.getElementById('resultOverlay'); 
+                if (overlay) overlay.remove(); 
+                location.reload(); 
+            }, 3000);
         }
-
-        // ========== УПРАВЛЕНИЕ СТАРТОВЫМ ЭКРАНОМ ==========
+        
+        // ========== УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ==========
+        
+        function escapeHtml(str) { 
+            if (!str) return ''; 
+            return str.replace(/[&<>]/g, function(m) { 
+                if (m === '&') return '&amp;'; 
+                if (m === '<') return '&lt;'; 
+                if (m === '>') return '&gt;'; 
+                return m; 
+            }); 
+        }
+        
+        async function updateTeacherUI() {
+            if (!currentTeacher) return;
+            
+            // Обновляем список классов
+            const { data: freshClasses } = await supabaseClient
+                .from('classes')
+                .select('*')
+                .eq('teacher_id', currentTeacher.id);
+            
+            currentTeacher.classes = freshClasses || [];
+            
+            const currentClass = currentTeacher.classes.find(c => c.id === currentTeacher.currentClassId) || currentTeacher.classes[0];
+            
+            const classCodeDisplay = document.getElementById('classCodeDisplay');
+            const currentClassNameSpan = document.getElementById('currentClassNameSpan');
+            
+            if (currentClass) {
+                classCodeDisplay.textContent = currentClass.class_name + ' (' + currentClass.class_code + ')';
+                if (currentClassNameSpan) currentClassNameSpan.textContent = currentClass.class_name;
+                currentTeacher.currentClassId = currentClass.id;
+            } else {
+                classCodeDisplay.textContent = 'Нет классов';
+                if (currentClassNameSpan) currentClassNameSpan.textContent = '—';
+            }
+            
+            // История классов
+            const historyList = document.getElementById('historyClassesList');
+            if (currentTeacher.classes && currentTeacher.classes.length > 0) {
+                let historyHtml = '';
+                for (let cls of currentTeacher.classes) {
+                    const isActive = (currentTeacher.currentClassId === cls.id);
+                    historyHtml += '<div style="display: flex; justify-content: space-between; align-items: center; margin: 5px 0;">';
+                    historyHtml += '<span class="history-item ' + (isActive ? 'active' : '') + '" onclick="switchToClass(' + cls.id + ')">' + cls.class_name + ' (' + cls.class_code + ')</span>';
+                    historyHtml += '<button class="delete-class-btn" onclick="deleteClassConfirm(' + cls.id + ', \'' + cls.class_name + '\')">🗑️</button>';
+                    historyHtml += '</div>';
+                }
+                historyList.innerHTML = historyHtml;
+            } else {
+                historyList.innerHTML = '<div style="color:#94a3b8; margin:5px 0;">Нет созданных классов</div>';
+            }
+            
+            if (currentClass) {
+                const { success, students } = await getStudentsWithResults(currentClass.class_code);
+                if (success) {
+                    const tbody = document.getElementById('studentsTableBody');
+                    if (students.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center">Нет учеников</td></tr>';
+                    } else {
+                        let rows = '';
+                        for (let s of students) {
+                            let riskClass = '', riskText = '';
+                            if (s.result?.risk_level === 'Низкий') { riskClass = 'risk-low'; riskText = 'Низкий'; }
+                            else if (s.result?.risk_level === 'Средний') { riskClass = 'risk-medium'; riskText = 'Средний'; }
+                            else if (s.result?.risk_level === 'Высокий') { riskClass = 'risk-high'; riskText = 'Высокий'; }
+                            else { riskText = '—'; }
+                            rows += '<tr>';
+                            rows += '<td>' + escapeHtml(s.last_name) + '</td>';
+                            rows += '<td>' + escapeHtml(s.first_name) + '</td>';
+                            rows += '<td>' + escapeHtml(s.middle_name || '') + '</td>';
+                            rows += '<td>' + escapeHtml(s.class_code) + '</td>';
+                            rows += '<td>' + (s.result ? '✅ Пройден' : '⏳ Не пройден') + '</td>';
+                            rows += '<td>' + (s.result ? '<span class="risk-badge ' + riskClass + '">' + riskText + '</span>' : '—') + '</tr>';
+                            rows += '<td>' + (s.result?.completed_at ? new Date(s.result.completed_at).toLocaleString('ru-RU') : '—') + '</td>';
+                            rows += '<td>' + (s.result ? '<button class="detail-btn" onclick="showStudentDetail(' + s.id + ')">📊</button>' : '—') + '</td>';
+                            rows += '</tr>';
+                        }
+                        tbody.innerHTML = rows;
+                    }
+                }
+            }
+        }
+        
+        async function deleteClassConfirm(classId, className) {
+            if (confirm('Вы уверены, что хотите удалить класс ' + className + '? Все ученики и их результаты будут удалены без возможности восстановления!')) {
+                const success = await deleteClass(classId);
+                if (success) {
+                    alert('Класс ' + className + ' удалён');
+                    // Обновляем данные учителя
+                    const { data: freshClasses } = await supabaseClient
+                        .from('classes')
+                        .select('*')
+                        .eq('teacher_id', currentTeacher.id);
+                    currentTeacher.classes = freshClasses || [];
+                    if (currentTeacher.classes.length > 0) {
+                        currentTeacher.currentClassId = currentTeacher.classes[0].id;
+                    } else {
+                        currentTeacher.currentClassId = null;
+                    }
+                    await updateTeacherUI();
+                } else {
+                    alert('Ошибка при удалении класса');
+                }
+            }
+        }
+        
+        function showStudentDetail(studentId) {
+            alert('Детальный просмотр результатов будет доступен в следующей версии');
+        }
+        
+        window.switchToClass = async function(classId) {
+            if (currentTeacher) {
+                currentTeacher.currentClassId = classId;
+                await updateTeacherUI();
+            }
+        };
+        
+        window.deleteClassConfirm = deleteClassConfirm;
+        window.showStudentDetail = showStudentDetail;
+        
+        // ========== ОБРАБОТЧИКИ ==========
         let currentRole = 'student';
         const studentRoleBtn = document.getElementById('studentRoleBtn');
         const teacherRoleBtn = document.getElementById('teacherRoleBtn');
         const studentForm = document.getElementById('studentForm');
         const teacherForm = document.getElementById('teacherForm');
         const startBtn = document.getElementById('startBtn');
-        const studentName = document.getElementById('studentName');
-        const studentClass = document.getElementById('studentClass');
-        const studentAge = document.getElementById('studentAge');
-        const parentConsent = document.getElementById('parentConsent');
-        const studentConsent = document.getElementById('studentConsent');
-        const teacherLogin = document.getElementById('teacherLogin');
-        const teacherPassword = document.getElementById('teacherPassword');
+        const studentLastName = document.getElementById('studentLastName');
+        const studentFirstName = document.getElementById('studentFirstName');
+        const studentMiddleName = document.getElementById('studentMiddleName');
+        const studentCode = document.getElementById('studentCode');
+        const teacherLoginInput = document.getElementById('teacherLogin');
+        const teacherPasswordInput = document.getElementById('teacherPassword');
         const errorMsg = document.getElementById('errorMsg');
-
-        function checkStudentForm() {
-            const isValid = studentName.value.trim() !== '' &&
-                           studentClass.value.trim() !== '' &&
-                           studentAge.value.trim() !== '' &&
-                           parentConsent.checked &&
-                           studentConsent.checked;
-            startBtn.disabled = !isValid;
+        
+        function checkForm() {
+            if (currentRole === 'student') {
+                const hasLastName = studentLastName.value.trim().length > 0;
+                const hasFirstName = studentFirstName.value.trim().length > 0;
+                const hasCode = studentCode.value.trim().length > 0;
+                startBtn.disabled = !(hasLastName && hasFirstName && hasCode);
+            } else {
+                const hasLogin = teacherLoginInput.value.trim().length > 0;
+                const hasPassword = teacherPasswordInput.value.trim().length > 0;
+                startBtn.disabled = !(hasLogin && hasPassword);
+            }
         }
-
-        function checkTeacherForm() {
-            const isValid = teacherLogin.value.trim() !== '' && teacherPassword.value.trim() !== '';
-            startBtn.disabled = !isValid;
-        }
-
-        studentName.addEventListener('input', checkStudentForm);
-        studentClass.addEventListener('input', checkStudentForm);
-        studentAge.addEventListener('input', checkStudentForm);
-        parentConsent.addEventListener('change', checkStudentForm);
-        studentConsent.addEventListener('change', checkStudentForm);
-        teacherLogin.addEventListener('input', checkTeacherForm);
-        teacherPassword.addEventListener('input', checkTeacherForm);
-
-        studentRoleBtn.onclick = () => {
+        
+        studentRoleBtn.onclick = function() {
             currentRole = 'student';
             studentRoleBtn.classList.add('active');
             teacherRoleBtn.classList.remove('active');
             studentForm.classList.remove('hidden');
             teacherForm.classList.add('hidden');
-            checkStudentForm();
+            checkForm();
         };
-        teacherRoleBtn.onclick = () => {
+        
+        teacherRoleBtn.onclick = function() {
             currentRole = 'teacher';
             teacherRoleBtn.classList.add('active');
             studentRoleBtn.classList.remove('active');
             studentForm.classList.add('hidden');
             teacherForm.classList.remove('hidden');
-            checkTeacherForm();
+            checkForm();
         };
-
-        startBtn.onclick = () => {
+        
+        studentLastName.addEventListener('input', checkForm);
+        studentFirstName.addEventListener('input', checkForm);
+        studentMiddleName.addEventListener('input', checkForm);
+        studentCode.addEventListener('input', checkForm);
+        teacherLoginInput.addEventListener('input', checkForm);
+        teacherPasswordInput.addEventListener('input', checkForm);
+        
+        startBtn.onclick = async function() {
             errorMsg.innerText = '';
             if (currentRole === 'student') {
-                if (!studentName.value.trim() || !studentClass.value.trim() || !studentAge.value.trim()) {
-                    errorMsg.innerText = 'Заполните все поля';
+                const lastName = studentLastName.value.trim();
+                const firstName = studentFirstName.value.trim();
+                const middleName = studentMiddleName.value.trim();
+                const classCode = studentCode.value.trim().toUpperCase();
+                
+                if (!lastName) { errorMsg.innerText = 'Введите фамилию'; return; }
+                if (!firstName) { errorMsg.innerText = 'Введите имя'; return; }
+                if (!classCode) { errorMsg.innerText = 'Введите код класса'; return; }
+                
+                const result = await studentLogin(lastName, firstName, middleName, classCode);
+                if (!result.success) {
+                    if (result.alreadyCompleted) {
+                        errorMsg.innerText = 'Вы уже проходили квест!';
+                    } else {
+                        errorMsg.innerText = result.error || 'Ошибка авторизации';
+                    }
                     return;
                 }
-                if (!parentConsent.checked || !studentConsent.checked) {
-                    errorMsg.innerText = 'Необходимо ваше согласие и согласие родителей';
-                    return;
-                }
-                playerData = { role: 'student', name: studentName.value.trim(), class: studentClass.value.trim(), age: parseInt(studentAge.value.trim()), parentConsent: true, consent: true };
+                
+                currentStudent = result.student;
+                diagnosticResults = [];
+                document.getElementById('startScreen').classList.add('hidden');
+                document.getElementById('gameScreen').classList.remove('hidden');
+                currentSceneId = "1";
+                loadScene();
             } else {
-                if (teacherLogin.value.trim() !== 'teacher' || teacherPassword.value.trim() !== '1234') {
-                    errorMsg.innerText = 'Неверный логин или пароль';
+                const login = teacherLoginInput.value.trim();
+                const password = teacherPasswordInput.value.trim();
+                
+                if (!login) { errorMsg.innerText = 'Введите логин'; return; }
+                if (!password) { errorMsg.innerText = 'Введите пароль'; return; }
+                
+                const result = await teacherLogin(login, password);
+                if (!result.success) {
+                    errorMsg.innerText = result.message;
                     return;
                 }
-                playerData = { role: 'teacher', name: 'Учитель', login: teacherLogin.value.trim() };
+                
+                currentTeacher = result.teacher;
+                if (currentTeacher.classes && currentTeacher.classes.length > 0) {
+                    currentTeacher.currentClassId = currentTeacher.classes[0].id;
+                }
+                document.getElementById('startScreen').classList.add('hidden');
+                document.getElementById('teacherScreen').classList.remove('hidden');
+                await updateTeacherUI();
             }
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('gameScreen').classList.remove('hidden');
-            currentSceneId = "1";
-            diagnosticResults = [];
-            loadScene();
         };
+        
+        document.getElementById('generateCodeBtn').addEventListener('click', async function() {
+            if (!currentTeacher) return;
+            const className = prompt('Введите название класса (9А, 10Б, 11В):', '');
+            if (className && className.trim()) {
+                const newClassName = className.trim().toUpperCase();
+                const result = await createClass(currentTeacher.id, newClassName);
+                if (result.success) {
+                    await updateTeacherUI();
+                    alert('Код класса: ' + result.class.class_code);
+                } else {
+                    alert('Ошибка: ' + result.error);
+                }
+            }
+        });
+        
+        document.getElementById('downloadReportBtn').addEventListener('click', function() {
+            alert('Функция экспорта отчёта будет добавлена позже');
+        });
+        
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            currentTeacher = null;
+            document.getElementById('teacherScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            teacherLoginInput.value = '';
+            teacherPasswordInput.value = '';
+            startBtn.disabled = true;
+        });
+        
+        checkForm();
     </script>
 </body>
 </html>
