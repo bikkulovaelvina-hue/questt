@@ -156,12 +156,14 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
         const SUPABASE_URL = 'https://rhjaoewcnbuzfinkioji.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_TUPXNw5gLiqQaHA7cpanqQ_1kHBLVaK';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
+        // ========== ПЕРЕМЕННЫЕ ==========
         let currentStudent = null;
         let currentTeacher = null;
         let allStudents = [];
@@ -170,7 +172,7 @@
         let isTyping = false;
         let typingTimeout = null;
         
-        // ========== SUPABASE FUNCTIONS ==========
+        // ========== ФУНКЦИИ SUPABASE ==========
         async function loadTeacherClasses(teacherId) {
             const { data, error } = await supabase
                 .from('classes')
@@ -208,7 +210,7 @@
             return result;
         }
         
-        async function teacherLogin(login, password) {
+        async function doTeacherLogin(login, password) {
             if (login !== 'teacher' || password !== 'school123') {
                 return { success: false, message: 'Неверный логин или пароль' };
             }
@@ -232,7 +234,7 @@
             return { success: true, teacher: { ...teacher, classes: classes } };
         }
         
-        async function studentLogin(name, classCode) {
+        async function doStudentLogin(name, classCode) {
             const { data: classData, error: classError } = await supabase
                 .from('classes')
                 .select('*')
@@ -562,15 +564,15 @@
         const startBtn = document.getElementById('startBtn');
         const studentName = document.getElementById('studentName');
         const studentCode = document.getElementById('studentCode');
-        const teacherLogin = document.getElementById('teacherLogin');
-        const teacherPassword = document.getElementById('teacherPassword');
+        const teacherLoginInput = document.getElementById('teacherLogin');
+        const teacherPasswordInput = document.getElementById('teacherPassword');
         const errorMsg = document.getElementById('errorMsg');
         
         function checkForm() {
             if (currentRole === 'student') {
                 startBtn.disabled = !(studentName.value.trim() && studentCode.value.trim());
             } else {
-                startBtn.disabled = !(teacherLogin.value.trim() && teacherPassword.value.trim());
+                startBtn.disabled = !(teacherLoginInput.value.trim() && teacherPasswordInput.value.trim());
             }
         }
         
@@ -594,8 +596,8 @@
         
         studentName.addEventListener('input', checkForm);
         studentCode.addEventListener('input', checkForm);
-        teacherLogin.addEventListener('input', checkForm);
-        teacherPassword.addEventListener('input', checkForm);
+        teacherLoginInput.addEventListener('input', checkForm);
+        teacherPasswordInput.addEventListener('input', checkForm);
         
         startBtn.onclick = async function() {
             errorMsg.innerText = '';
@@ -604,7 +606,7 @@
                 const classCode = studentCode.value.trim().toUpperCase();
                 if (!name) { errorMsg.innerText = 'Введите ФИО'; return; }
                 if (!classCode) { errorMsg.innerText = 'Введите код класса'; return; }
-                const result = await studentLogin(name, classCode);
+                const result = await doStudentLogin(name, classCode);
                 if (!result.success) {
                     errorMsg.innerText = result.alreadyCompleted ? 'Вы уже проходили квест!' : (result.error || 'Ошибка');
                     return;
@@ -616,9 +618,9 @@
                 currentSceneId = "1";
                 loadScene();
             } else {
-                const login = teacherLogin.value.trim();
-                const password = teacherPassword.value.trim();
-                const result = await teacherLogin(login, password);
+                const login = teacherLoginInput.value.trim();
+                const password = teacherPasswordInput.value.trim();
+                const result = await doTeacherLogin(login, password);
                 if (!result.success) {
                     errorMsg.innerText = result.message;
                     return;
@@ -656,8 +658,8 @@
             currentTeacher = null;
             document.getElementById('teacherScreen').classList.add('hidden');
             document.getElementById('startScreen').classList.remove('hidden');
-            teacherLogin.value = '';
-            teacherPassword.value = '';
+            teacherLoginInput.value = '';
+            teacherPasswordInput.value = '';
             startBtn.disabled = true;
         });
         
