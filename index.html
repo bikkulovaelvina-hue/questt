@@ -34,7 +34,6 @@
             .students-table { font-size: 0.75rem; }
             .students-table th, .students-table td { padding: 6px !important; }
             .detail-btn { padding: 4px 8px !important; font-size: 0.7rem !important; }
-            .delete-btn { padding: 4px 8px !important; font-size: 0.7rem !important; }
         }
         .start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0f1e, #0f172a); display: flex; align-items: center; justify-content: center; z-index: 100; overflow-y: auto; padding: 20px; }
         .start-card { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border-radius: 32px; padding: 2rem; width: 450px; max-width: 100%; text-align: center; border: 1px solid rgba(139, 92, 246, 0.4); }
@@ -76,9 +75,8 @@
         .risk-high { background: #ef444420; color: #ef4444; border: 1px solid #ef4444; }
         .teacher-buttons { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; margin-bottom: 20px; }
         .teacher-buttons button { width: auto; padding: 10px 20px; }
-        .detail-btn, .delete-btn { background: rgba(51, 65, 85, 0.8); border: 1px solid rgba(139, 92, 246, 0.4); padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; margin: 2px; }
+        .detail-btn { background: rgba(51, 65, 85, 0.8); border: 1px solid rgba(139, 92, 246, 0.4); padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: all 0.2s; }
         .detail-btn:hover { background: rgba(139, 92, 246, 0.4); }
-        .delete-btn:hover { background: rgba(239, 68, 68, 0.4); border-color: #ef4444; }
         .result-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 200; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
         .result-card { background: rgba(30, 41, 59, 0.98); border-radius: 32px; padding: 2rem; width: 450px; max-width: 100%; text-align: center; border: 1px solid rgba(139, 92, 246, 0.4); }
         .simple-result { text-align: center; padding: 40px; }
@@ -90,9 +88,6 @@
         .history-item { display: inline-block; background: rgba(51, 65, 85, 0.5); padding: 5px 12px; border-radius: 20px; margin: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
         .history-item:hover { background: rgba(139, 92, 246, 0.4); }
         .history-item.active { background: linear-gradient(135deg, #c084fc, #818cf8); }
-        .class-actions { display: inline-block; margin-left: 10px; }
-        .delete-class-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.7rem; padding: 0 5px; width: auto; display: inline; }
-        .delete-class-btn:hover { color: #ff6666; }
     </style>
 </head>
 <body>
@@ -104,17 +99,15 @@
                 <button id="teacherRoleBtn" class="role-btn">Учитель</button>
             </div>
             <div id="studentForm">
-                <div class="form-group"><label>Фамилия</label><input type="text" id="studentLastName" placeholder="Иванов"></div>
-                <div class="form-group"><label>Имя</label><input type="text" id="studentFirstName" placeholder="Иван"></div>
-                <div class="form-group"><label>Отчество</label><input type="text" id="studentMiddleName" placeholder="Иванович"></div>
+                <div class="form-group"><label>ФИО</label><input type="text" id="studentName" placeholder="Иванов Иван Иванович"></div>
                 <div class="form-group"><label>Код класса</label><input type="text" id="studentCode" placeholder="Например: 9А-7F3D"></div>
             </div>
             <div id="teacherForm" class="hidden">
-                <div class="form-group"><label>Логин</label><input type="text" id="teacherLogin" placeholder="Введите логин"></div>
-                <div class="form-group"><label>Пароль</label><input type="password" id="teacherPassword" placeholder="Введите пароль"></div>
+                <div class="form-group"><label>Логин</label><input type="text" id="teacherLogin" placeholder="teacher"></div>
+                <div class="form-group"><label>Пароль</label><input type="password" id="teacherPassword" placeholder="school123"></div>
             </div>
             <div id="errorMsg" class="error-msg"></div>
-            <button id="startBtn" disabled>Далее</button>
+            <button id="startBtn">Далее</button>
         </div>
     </div>
 
@@ -145,7 +138,7 @@
             </div>
             
             <div id="historyClassesContainer" class="history-classes">
-                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:8px;">Мои классы (нажмите для переключения)</div>
+                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:8px;">Мои классы</div>
                 <div id="historyClassesList"></div>
             </div>
             
@@ -154,9 +147,9 @@
                 <div style="overflow-x: auto;">
                     <table class="students-table" id="studentsTable">
                         <thead>
-                            <tr><th>Фамилия</th><th>Имя</th><th>Отчество</th><th>Код</th><th>Статус</th><th>Риск</th><th>Дата</th><th>Детали</th></tr>
+                            <tr><th>ФИО</th><th>Код</th><th>Статус</th><th>Риск</th><th>Дата</th><th>Детали</th></tr>
                         </thead>
-                        <tbody id="studentsTableBody"><tr><td colspan="8" style="text-align:center">Нет учеников</td></tr></tbody>
+                        <tbody id="studentsTableBody"><tr><td colspan="6" style="text-align:center">Нет учеников</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -165,108 +158,123 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ========== ПОДКЛЮЧЕНИЕ К SUPABASE ==========
         const SUPABASE_URL = 'https://rhjaoewcnbuzfinkioji.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_TUPXNw5gLiqQaHA7cpanqQ_1kHBLVaK';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // ========== ПЕРЕМЕННЫЕ ==========
         let currentStudent = null;
         let currentTeacher = null;
+        let allStudents = [];
         let diagnosticResults = [];
         let currentSceneId = "1";
         let isTyping = false;
         let typingTimeout = null;
         
-        // ========== ФУНКЦИИ РАБОТЫ С БАЗОЙ ДАННЫХ ==========
+        // ========== SUPABASE FUNCTIONS ==========
+        async function loadTeacherClasses(teacherId) {
+            const { data, error } = await supabase
+                .from('classes')
+                .select('*')
+                .eq('teacher_id', teacherId);
+            if (error) return [];
+            return data || [];
+        }
         
-        async function studentLogin(lastName, firstName, middleName, classCode) {
-            // Проверяем код класса
-            const { data: classData, error: classError } = await supabaseClient
+        async function loadStudentsWithResults(classCode) {
+            const { data: students, error } = await supabase
+                .from('students')
+                .select('*')
+                .eq('class_code', classCode);
+            if (error) return [];
+            
+            const result = [];
+            for (const student of students) {
+                const { data: results } = await supabase
+                    .from('results')
+                    .select('*')
+                    .eq('student_id', student.id)
+                    .maybeSingle();
+                result.push({
+                    id: student.id,
+                    name: student.full_name,
+                    classCode: student.class_code,
+                    completed: !!results,
+                    riskLevel: results?.risk_level || null,
+                    overallRiskPercent: results?.overall_risk_percent || null,
+                    scaleResults: results?.scale_results || null,
+                    date: results?.completed_at ? new Date(results.completed_at).toLocaleString('ru-RU') : null
+                });
+            }
+            return result;
+        }
+        
+        async function teacherLogin(login, password) {
+            if (login !== 'teacher' || password !== 'school123') {
+                return { success: false, message: 'Неверный логин или пароль' };
+            }
+            let { data: teacher, error } = await supabase
+                .from('teachers')
+                .select('*')
+                .eq('login', login)
+                .maybeSingle();
+            if (error || !teacher) {
+                const { data: newTeacher, error: insertError } = await supabase
+                    .from('teachers')
+                    .insert([{ login: login, password: password, full_name: 'Учитель', school: 'Школа' }])
+                    .select()
+                    .single();
+                if (insertError) {
+                    return { success: false, message: 'Ошибка создания учителя: ' + insertError.message };
+                }
+                teacher = newTeacher;
+            }
+            const classes = await loadTeacherClasses(teacher.id);
+            return { success: true, teacher: { ...teacher, classes: classes } };
+        }
+        
+        async function studentLogin(name, classCode) {
+            const { data: classData, error: classError } = await supabase
                 .from('classes')
                 .select('*')
                 .eq('class_code', classCode)
                 .maybeSingle();
-            
             if (classError || !classData) {
                 return { success: false, error: 'Неверный код класса' };
             }
-            
-            // Ищем ученика
-            let { data: students, error: studentError } = await supabaseClient
+            let { data: students, error: studentError } = await supabase
                 .from('students')
                 .select('*')
-                .eq('last_name', lastName)
-                .eq('first_name', firstName)
-                .eq('middle_name', middleName)
+                .eq('full_name', name)
                 .eq('class_code', classCode);
-            
             if (studentError) {
                 return { success: false, error: studentError.message };
             }
-            
             let student = students?.[0];
-            
             if (!student) {
-                // Создаём нового ученика
-                const { data: newStudent, error: insertError } = await supabaseClient
+                const { data: newStudent, error: insertError } = await supabase
                     .from('students')
-                    .insert([{ 
-                        last_name: lastName, 
-                        first_name: firstName, 
-                        middle_name: middleName, 
-                        class_code: classCode,
-                        parent_consent: true,
-                        student_consent: true
-                    }])
+                    .insert([{ full_name: name, class_code: classCode, parent_consent: true, student_consent: true }])
                     .select()
                     .single();
-                
                 if (insertError) {
                     return { success: false, error: insertError.message };
                 }
                 student = newStudent;
             } else {
-                // Проверяем, не проходил ли уже квест
-                const { data: existingResult } = await supabaseClient
+                const { data: existingResult } = await supabase
                     .from('results')
                     .select('*')
                     .eq('student_id', student.id)
                     .maybeSingle();
-                
                 if (existingResult) {
                     return { success: false, alreadyCompleted: true };
                 }
             }
-            
             return { success: true, student: student };
         }
         
-        async function teacherLogin(login, password) {
-            const { data, error } = await supabaseClient
-                .from('teachers')
-                .select('*')
-                .eq('login', login)
-                .eq('password', password)
-                .maybeSingle();
-            
-            if (error || !data) {
-                return { success: false, message: 'Неверный логин или пароль' };
-            }
-            
-            const { data: classes } = await supabaseClient
-                .from('classes')
-                .select('*')
-                .eq('teacher_id', data.id);
-            
-            return { 
-                success: true, 
-                teacher: { ...data, classes: classes || [] }
-            };
-        }
-        
-        async function saveStudentResult(studentId, results) {
-            const { error } = await supabaseClient
+        async function saveResult(studentId, results) {
+            const { error } = await supabase
                 .from('results')
                 .insert([{
                     student_id: studentId,
@@ -275,35 +283,7 @@
                     scale_results: results.scaleResults,
                     answers: results.answers
                 }]);
-            
             return !error;
-        }
-        
-        async function getStudentsWithResults(classCode) {
-            const { data: students, error: studentsError } = await supabaseClient
-                .from('students')
-                .select('*')
-                .eq('class_code', classCode);
-            
-            if (studentsError) {
-                return { success: false, error: studentsError.message };
-            }
-            
-            const studentsWithResults = [];
-            for (const student of students) {
-                const { data: results } = await supabaseClient
-                    .from('results')
-                    .select('*')
-                    .eq('student_id', student.id)
-                    .maybeSingle();
-                
-                studentsWithResults.push({
-                    ...student,
-                    result: results || null
-                });
-            }
-            
-            return { success: true, students: studentsWithResults };
         }
         
         async function createClass(teacherId, className) {
@@ -311,58 +291,31 @@
             let code = '';
             for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
             const classCode = `${className}-${code}`;
-            
-            const { data, error } = await supabaseClient
+            const { data, error } = await supabase
                 .from('classes')
-                .insert([{
-                    teacher_id: teacherId,
-                    class_name: className,
-                    class_code: classCode
-                }])
+                .insert([{ teacher_id: teacherId, class_name: className, class_code: classCode }])
                 .select()
                 .single();
-            
-            if (error) {
-                return { success: false, error: error.message };
-            }
+            if (error) return { success: false, error: error.message };
             return { success: true, class: data };
         }
         
-        async function deleteClass(classId) {
-            // Проверяем, есть ли ученики в этом классе
-            const { data: classData } = await supabaseClient
-                .from('classes')
-                .select('class_code')
-                .eq('id', classId)
-                .single();
-            
-            if (classData) {
-                const { data: students } = await supabaseClient
-                    .from('students')
-                    .select('id')
-                    .eq('class_code', classData.class_code);
-                
-                if (students && students.length > 0) {
-                    // Удаляем результаты учеников
-                    for (const student of students) {
-                        await supabaseClient.from('results').delete().eq('student_id', student.id);
-                    }
-                    // Удаляем учеников
-                    await supabaseClient.from('students').delete().eq('class_code', classData.class_code);
+        async function deleteClass(classId, classCode) {
+            const { data: students } = await supabase
+                .from('students')
+                .select('id')
+                .eq('class_code', classCode);
+            if (students && students.length > 0) {
+                for (const student of students) {
+                    await supabase.from('results').delete().eq('student_id', student.id);
                 }
+                await supabase.from('students').delete().eq('class_code', classCode);
             }
-            
-            // Удаляем класс
-            const { error } = await supabaseClient
-                .from('classes')
-                .delete()
-                .eq('id', classId);
-            
+            const { error } = await supabase.from('classes').delete().eq('id', classId);
             return !error;
         }
         
-        // ========== ЛОГИКА КВЕСТА ==========
-        
+        // ========== КВЕСТ ==========
         const scalesConfig = {
             "Демонстративность": { coef: 1.2, maxVal: 6 },
             "Аффективность": { coef: 1.1, maxVal: 6.6 },
@@ -504,13 +457,13 @@
             if (overallRiskPercent < 30) riskLevel = 'Низкий';
             else if (overallRiskPercent < 60) riskLevel = 'Средний';
             else riskLevel = 'Высокий';
-            return { overallRiskPercent: overallRiskPercent, riskLevel: riskLevel, scaleResults: scaleResults };
+            return { overallRiskPercent, riskLevel, scaleResults };
         }
         
         async function finishGame() {
             if (currentStudent) {
                 const fullResults = calculateFullResults(diagnosticResults);
-                await saveStudentResult(currentStudent.id, {
+                await saveResult(currentStudent.id, {
                     overallRiskPercent: fullResults.overallRiskPercent,
                     riskLevel: fullResults.riskLevel,
                     scaleResults: fullResults.scaleResults,
@@ -518,7 +471,7 @@
                 });
             }
             document.getElementById('gameScreen').classList.add('hidden');
-            const simpleResultHtml = '<div class="result-overlay" id="resultOverlay"><div class="result-card simple-result"><h2>Квест пройден!</h2><p style="margin-top:10px;">Спасибо за прохождение!</p></div></div>';
+            const simpleResultHtml = '<div class="result-overlay" id="resultOverlay"><div class="result-card simple-result"><h2>Квест пройден!</h2><p>Спасибо за прохождение!</p></div></div>';
             document.body.insertAdjacentHTML('beforeend', simpleResultHtml);
             setTimeout(function() { 
                 const overlay = document.getElementById('resultOverlay'); 
@@ -527,115 +480,62 @@
             }, 3000);
         }
         
-        // ========== УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ==========
-        
-        function escapeHtml(str) { 
-            if (!str) return ''; 
-            return str.replace(/[&<>]/g, function(m) { 
-                if (m === '&') return '&amp;'; 
-                if (m === '<') return '&lt;'; 
-                if (m === '>') return '&gt;'; 
-                return m; 
-            }); 
-        }
+        // ========== UI ==========
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { return m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'; }); }
         
         async function updateTeacherUI() {
             if (!currentTeacher) return;
-            
-            // Обновляем список классов
-            const { data: freshClasses } = await supabaseClient
-                .from('classes')
-                .select('*')
-                .eq('teacher_id', currentTeacher.id);
-            
-            currentTeacher.classes = freshClasses || [];
-            
+            const classes = await loadTeacherClasses(currentTeacher.id);
+            currentTeacher.classes = classes;
             const currentClass = currentTeacher.classes.find(c => c.id === currentTeacher.currentClassId) || currentTeacher.classes[0];
-            
             const classCodeDisplay = document.getElementById('classCodeDisplay');
             const currentClassNameSpan = document.getElementById('currentClassNameSpan');
-            
             if (currentClass) {
                 classCodeDisplay.textContent = currentClass.class_name + ' (' + currentClass.class_code + ')';
                 if (currentClassNameSpan) currentClassNameSpan.textContent = currentClass.class_name;
                 currentTeacher.currentClassId = currentClass.id;
+                const students = await loadStudentsWithResults(currentClass.class_code);
+                allStudents = students;
+                const tbody = document.getElementById('studentsTableBody');
+                if (students.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Нет учеников</td></tr>';
+                } else {
+                    let rows = '';
+                    for (let s of students) {
+                        let riskClass = '', riskText = '';
+                        if (s.riskLevel === 'Низкий') { riskClass = 'risk-low'; riskText = 'Низкий'; }
+                        else if (s.riskLevel === 'Средний') { riskClass = 'risk-medium'; riskText = 'Средний'; }
+                        else if (s.riskLevel === 'Высокий') { riskClass = 'risk-high'; riskText = 'Высокий'; }
+                        else { riskText = '—'; }
+                        rows += `<tr>
+                            <td>${escapeHtml(s.name)}</td>
+                            <td>${escapeHtml(s.classCode)}</td>
+                            <td>${s.completed ? '✅ Пройден' : '⏳ Не пройден'}</td>
+                            <td>${s.completed ? `<span class="risk-badge ${riskClass}">${riskText}</span>` : '—'}</td>
+                            <td>${s.date || '—'}</td>
+                            <td>${s.completed ? '<button class="detail-btn" onclick="alert(\'Детали результатов\')">📊</button>' : '—'}</td>
+                        </tr>`;
+                    }
+                    tbody.innerHTML = rows;
+                }
             } else {
-                classCodeDisplay.textContent = 'Нет классов';
+                classCodeDisplay.textContent = 'Не создан';
                 if (currentClassNameSpan) currentClassNameSpan.textContent = '—';
             }
-            
-            // История классов
             const historyList = document.getElementById('historyClassesList');
             if (currentTeacher.classes && currentTeacher.classes.length > 0) {
                 let historyHtml = '';
                 for (let cls of currentTeacher.classes) {
                     const isActive = (currentTeacher.currentClassId === cls.id);
-                    historyHtml += '<div style="display: flex; justify-content: space-between; align-items: center; margin: 5px 0;">';
-                    historyHtml += '<span class="history-item ' + (isActive ? 'active' : '') + '" onclick="switchToClass(' + cls.id + ')">' + cls.class_name + ' (' + cls.class_code + ')</span>';
-                    historyHtml += '<button class="delete-class-btn" onclick="deleteClassConfirm(' + cls.id + ', \'' + cls.class_name + '\')">🗑️</button>';
-                    historyHtml += '</div>';
+                    historyHtml += `<div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                        <span class="history-item ${isActive ? 'active' : ''}" onclick="switchToClass(${cls.id})">${cls.class_name} (${cls.class_code})</span>
+                        <button class="detail-btn" style="background:#ef4444;" onclick="deleteClassConfirm(${cls.id}, '${cls.class_code}')">Удалить</button>
+                    </div>`;
                 }
                 historyList.innerHTML = historyHtml;
             } else {
-                historyList.innerHTML = '<div style="color:#94a3b8; margin:5px 0;">Нет созданных классов</div>';
+                historyList.innerHTML = '<div style="color:#94a3b8;">Нет созданных классов</div>';
             }
-            
-            if (currentClass) {
-                const { success, students } = await getStudentsWithResults(currentClass.class_code);
-                if (success) {
-                    const tbody = document.getElementById('studentsTableBody');
-                    if (students.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center">Нет учеников</td></tr>';
-                    } else {
-                        let rows = '';
-                        for (let s of students) {
-                            let riskClass = '', riskText = '';
-                            if (s.result?.risk_level === 'Низкий') { riskClass = 'risk-low'; riskText = 'Низкий'; }
-                            else if (s.result?.risk_level === 'Средний') { riskClass = 'risk-medium'; riskText = 'Средний'; }
-                            else if (s.result?.risk_level === 'Высокий') { riskClass = 'risk-high'; riskText = 'Высокий'; }
-                            else { riskText = '—'; }
-                            rows += '<tr>';
-                            rows += '<td>' + escapeHtml(s.last_name) + '</td>';
-                            rows += '<td>' + escapeHtml(s.first_name) + '</td>';
-                            rows += '<td>' + escapeHtml(s.middle_name || '') + '</td>';
-                            rows += '<td>' + escapeHtml(s.class_code) + '</td>';
-                            rows += '<td>' + (s.result ? '✅ Пройден' : '⏳ Не пройден') + '</td>';
-                            rows += '<td>' + (s.result ? '<span class="risk-badge ' + riskClass + '">' + riskText + '</span>' : '—') + '</tr>';
-                            rows += '<td>' + (s.result?.completed_at ? new Date(s.result.completed_at).toLocaleString('ru-RU') : '—') + '</td>';
-                            rows += '<td>' + (s.result ? '<button class="detail-btn" onclick="showStudentDetail(' + s.id + ')">📊</button>' : '—') + '</td>';
-                            rows += '</tr>';
-                        }
-                        tbody.innerHTML = rows;
-                    }
-                }
-            }
-        }
-        
-        async function deleteClassConfirm(classId, className) {
-            if (confirm('Вы уверены, что хотите удалить класс ' + className + '? Все ученики и их результаты будут удалены без возможности восстановления!')) {
-                const success = await deleteClass(classId);
-                if (success) {
-                    alert('Класс ' + className + ' удалён');
-                    // Обновляем данные учителя
-                    const { data: freshClasses } = await supabaseClient
-                        .from('classes')
-                        .select('*')
-                        .eq('teacher_id', currentTeacher.id);
-                    currentTeacher.classes = freshClasses || [];
-                    if (currentTeacher.classes.length > 0) {
-                        currentTeacher.currentClassId = currentTeacher.classes[0].id;
-                    } else {
-                        currentTeacher.currentClassId = null;
-                    }
-                    await updateTeacherUI();
-                } else {
-                    alert('Ошибка при удалении класса');
-                }
-            }
-        }
-        
-        function showStudentDetail(studentId) {
-            alert('Детальный просмотр результатов будет доступен в следующей версии');
         }
         
         window.switchToClass = async function(classId) {
@@ -645,34 +545,32 @@
             }
         };
         
-        window.deleteClassConfirm = deleteClassConfirm;
-        window.showStudentDetail = showStudentDetail;
+        window.deleteClassConfirm = async function(classId, classCode) {
+            if (confirm('Удалить класс? Все ученики и результаты будут удалены!')) {
+                await deleteClass(classId, classCode);
+                await updateTeacherUI();
+                alert('Класс удалён');
+            }
+        };
         
-        // ========== ОБРАБОТЧИКИ ==========
+        // ========== ОБРАБОТЧИКИ СТАРТОВОГО ЭКРАНА ==========
         let currentRole = 'student';
         const studentRoleBtn = document.getElementById('studentRoleBtn');
         const teacherRoleBtn = document.getElementById('teacherRoleBtn');
         const studentForm = document.getElementById('studentForm');
         const teacherForm = document.getElementById('teacherForm');
         const startBtn = document.getElementById('startBtn');
-        const studentLastName = document.getElementById('studentLastName');
-        const studentFirstName = document.getElementById('studentFirstName');
-        const studentMiddleName = document.getElementById('studentMiddleName');
+        const studentName = document.getElementById('studentName');
         const studentCode = document.getElementById('studentCode');
-        const teacherLoginInput = document.getElementById('teacherLogin');
-        const teacherPasswordInput = document.getElementById('teacherPassword');
+        const teacherLogin = document.getElementById('teacherLogin');
+        const teacherPassword = document.getElementById('teacherPassword');
         const errorMsg = document.getElementById('errorMsg');
         
         function checkForm() {
             if (currentRole === 'student') {
-                const hasLastName = studentLastName.value.trim().length > 0;
-                const hasFirstName = studentFirstName.value.trim().length > 0;
-                const hasCode = studentCode.value.trim().length > 0;
-                startBtn.disabled = !(hasLastName && hasFirstName && hasCode);
+                startBtn.disabled = !(studentName.value.trim() && studentCode.value.trim());
             } else {
-                const hasLogin = teacherLoginInput.value.trim().length > 0;
-                const hasPassword = teacherPasswordInput.value.trim().length > 0;
-                startBtn.disabled = !(hasLogin && hasPassword);
+                startBtn.disabled = !(teacherLogin.value.trim() && teacherPassword.value.trim());
             }
         }
         
@@ -694,35 +592,23 @@
             checkForm();
         };
         
-        studentLastName.addEventListener('input', checkForm);
-        studentFirstName.addEventListener('input', checkForm);
-        studentMiddleName.addEventListener('input', checkForm);
+        studentName.addEventListener('input', checkForm);
         studentCode.addEventListener('input', checkForm);
-        teacherLoginInput.addEventListener('input', checkForm);
-        teacherPasswordInput.addEventListener('input', checkForm);
+        teacherLogin.addEventListener('input', checkForm);
+        teacherPassword.addEventListener('input', checkForm);
         
         startBtn.onclick = async function() {
             errorMsg.innerText = '';
             if (currentRole === 'student') {
-                const lastName = studentLastName.value.trim();
-                const firstName = studentFirstName.value.trim();
-                const middleName = studentMiddleName.value.trim();
+                const name = studentName.value.trim();
                 const classCode = studentCode.value.trim().toUpperCase();
-                
-                if (!lastName) { errorMsg.innerText = 'Введите фамилию'; return; }
-                if (!firstName) { errorMsg.innerText = 'Введите имя'; return; }
+                if (!name) { errorMsg.innerText = 'Введите ФИО'; return; }
                 if (!classCode) { errorMsg.innerText = 'Введите код класса'; return; }
-                
-                const result = await studentLogin(lastName, firstName, middleName, classCode);
+                const result = await studentLogin(name, classCode);
                 if (!result.success) {
-                    if (result.alreadyCompleted) {
-                        errorMsg.innerText = 'Вы уже проходили квест!';
-                    } else {
-                        errorMsg.innerText = result.error || 'Ошибка авторизации';
-                    }
+                    errorMsg.innerText = result.alreadyCompleted ? 'Вы уже проходили квест!' : (result.error || 'Ошибка');
                     return;
                 }
-                
                 currentStudent = result.student;
                 diagnosticResults = [];
                 document.getElementById('startScreen').classList.add('hidden');
@@ -730,18 +616,13 @@
                 currentSceneId = "1";
                 loadScene();
             } else {
-                const login = teacherLoginInput.value.trim();
-                const password = teacherPasswordInput.value.trim();
-                
-                if (!login) { errorMsg.innerText = 'Введите логин'; return; }
-                if (!password) { errorMsg.innerText = 'Введите пароль'; return; }
-                
+                const login = teacherLogin.value.trim();
+                const password = teacherPassword.value.trim();
                 const result = await teacherLogin(login, password);
                 if (!result.success) {
                     errorMsg.innerText = result.message;
                     return;
                 }
-                
                 currentTeacher = result.teacher;
                 if (currentTeacher.classes && currentTeacher.classes.length > 0) {
                     currentTeacher.currentClassId = currentTeacher.classes[0].id;
@@ -775,11 +656,12 @@
             currentTeacher = null;
             document.getElementById('teacherScreen').classList.add('hidden');
             document.getElementById('startScreen').classList.remove('hidden');
-            teacherLoginInput.value = '';
-            teacherPasswordInput.value = '';
+            teacherLogin.value = '';
+            teacherPassword.value = '';
             startBtn.disabled = true;
         });
         
+        startBtn.disabled = false;
         checkForm();
     </script>
 </body>
