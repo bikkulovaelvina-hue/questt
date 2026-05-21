@@ -188,16 +188,14 @@
     </div>
 
     <script>
-        // ========== НАСТРОЙКИ SUPABASE ==========
-        // 🔴 ВСТАВЬТЕ ВАШИ ДАННЫЕ ИЗ SUPABASE 🔴
-        // ========== НАСТРОЙКИ SUPABASE ==========
-        const SUPABASE_URL = 'https://rhjaoewcnbuzfinkioji.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoamFvZXdjbmJ1emZpbmtpb2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNzU5ODQsImV4cCI6MjA5NDc1MTk4NH0.xMjuIbeLi_MJ6dsoMyrFVZCBy8BGQsIutIVpeKqjXSk';
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const TEACHER_LOGIN = 'teacher';
-const TEACHER_PASSWORD = 'school123';
+       (function() {
+    // ========== SUPABASE НАСТРОЙКИ ==========
+    const SUPABASE_URL = 'https://rhjaoewcnbuzfinkioji.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoamFvZXdjbmJ1emZpbmtpb2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNzU5ODQsImV4cCI6MjA5NDc1MTk4NH0.xMjuIbeLi_MJ6dsoMyrFVZCBy8BGQsIutIVpeKqjXSk';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const TEACHER_LOGIN = 'teacher';
+    const TEACHER_PASSWORD = 'school123';
         
         let currentTeacher = null;
         let allStudents = [];
