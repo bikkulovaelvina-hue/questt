@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Тайна старой школы — квест</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="aiAnalytics.js"></script>
+    <script src="scenes.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0f; min-height: 100vh; color: #e2e8f0; touch-action: manipulation; }
@@ -20,6 +22,7 @@
             .speaker-name { font-size: 0.85rem !important; }
             .dialog-text { font-size: 0.95rem !important; padding: 10px !important; min-height: 60px !important; }
             .choice-btn { padding: 8px 12px !important; font-size: 0.8rem !important; min-width: 100px !important; }
+            .next-btn { padding: 8px 16px !important; font-size: 0.8rem !important; }
             .result-card { width: 95% !important; padding: 1.2rem !important; }
             .students-table { font-size: 0.75rem; }
             .students-table th, .students-table td { padding: 6px !important; }
@@ -48,9 +51,18 @@
         .speaker-avatar { width: 45px; height: 45px; background: linear-gradient(135deg, #c084fc, #818cf8); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
         .speaker-name { font-size: 1rem; font-weight: bold; color: #c084fc; }
         .dialog-text { font-size: 1.1rem; line-height: 1.5; margin-bottom: 15px; padding: 12px; background: rgba(0, 0, 0, 0.4); border-radius: 16px; min-height: 70px; }
-        .choices-container { display: flex; gap: 10px; flex-wrap: wrap; }
+        .choices-container { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
         .choice-btn { background: rgba(51, 65, 85, 0.9); border: 1px solid rgba(139, 92, 246, 0.4); padding: 8px 16px; border-radius: 40px; font-size: 0.85rem; color: #e2e8f0; cursor: pointer; width: auto; flex: 1; min-width: 120px; }
-        .choice-btn:hover { background: rgba(139, 92, 246, 0.5); transform: translateX(5px); }
+        .choice-btn.selected { background: rgba(139, 92, 246, 0.6); border-color: #c084fc; }
+        .next-btn {
+            background: linear-gradient(135deg, #c084fc, #818cf8);
+            margin-top: 10px;
+            width: auto;
+            padding: 10px 20px;
+            display: block;
+            margin-left: auto;
+        }
+        .next-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .progress-bar { position: absolute; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #c084fc, #818cf8); transition: width 0.3s; z-index: 20; }
         .typing-cursor { display: inline-block; width: 2px; height: 1.1em; background: #c084fc; margin-left: 2px; animation: blink 1s infinite; }
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
@@ -112,8 +124,8 @@
         <div class="start-card">
             <h1>Тайна старой школы</h1>
             <div class="role-buttons">
-                <button id="studentRoleBtn" class="role-btn active">Ученик</button>
-                <button id="teacherRoleBtn" class="role-btn">Учитель</button>
+                <button id="studentRoleBtn" class="role-btn active">Подросток</button>
+                <button id="teacherRoleBtn" class="role-btn">Психолог</button>
             </div>
             <div id="studentForm">
                 <div class="form-group"><label>ФИО</label><input type="text" id="studentName" placeholder="Иванов Иван Иванович"></div>
@@ -136,13 +148,14 @@
             <div class="speaker-info"><div class="speaker-avatar" id="speakerAvatar">🗝️</div><div class="speaker-name" id="speakerName">Ты</div></div>
             <div class="dialog-text" id="dialogText"><span id="displayText"></span><span class="typing-cursor"></span></div>
             <div class="choices-container" id="choicesContainer"></div>
+            <button id="nextBtn" class="next-btn" disabled style="display: none;"> Далее</button>
         </div>
     </div>
 
     <div id="teacherScreen" class="teacher-screen hidden">
         <div class="teacher-panel">
             <div class="teacher-header">
-                <h2>Личный кабинет учителя</h2>
+                <h2>Личный кабинет психолога</h2>
                 <div>
                     <div style="font-size:0.8rem; color:#94a3b8;">Текущий класс</div>
                     <div class="class-code-box" id="classCodeDisplay">—</div>
@@ -175,16 +188,9 @@
     </div>
 
     <script>
-    // Ждем полной загрузки страницы и Supabase SDK
+    
+    // ========== SUPABASE НАСТРОЙКИ ==========
     document.addEventListener('DOMContentLoaded', function() {
-        // Проверяем, что Supabase загрузился
-        if (typeof supabase === 'undefined' && typeof window.supabase === 'undefined') {
-            console.error('Supabase SDK не загрузился! Проверьте интернет соединение.');
-            document.getElementById('errorMsg').innerText = 'Ошибка загрузки. Проверьте интернет.';
-            return;
-        }
-        
-        // ========== SUPABASE НАСТРОЙКИ ==========
         const SUPABASE_URL = 'https://rhjaoewcnbuzfinkioji.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoamFvZXdjbmJ1emZpbmtpb2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNzU5ODQsImV4cCI6MjA5NDc1MTk4NH0.xMjuIbeLi_MJ6dsoMyrFVZCBy8BGQsIutIVpeKqjXSk';
 
@@ -199,6 +205,17 @@
         let currentSceneId = "1";
         let isTyping = false;
         let typingTimeout = null;
+        let sceneStartTime = null;
+        let questionAppearTime = null;
+        
+        let selectedChoiceKey = null;
+        let selectedChoiceText = null;
+        let selectedScore = null;
+        let selectedTime = null;
+        let firstChoiceKey = null;
+        let firstChoiceText = null;
+        let firstChoiceScore = null;
+        let firstChoiceTime = null;
 
         // ========== ФУНКЦИИ SUPABASE ==========
         async function loadTeacher(login) {
@@ -238,7 +255,8 @@
                 id: student.id, teacher_id: student.teacher_id, class_id: student.class_id,
                 name: student.name, class_code: student.class_code, completed: student.completed,
                 risk_level: student.riskLevel, overall_risk: student.overallRiskPercent,
-                scale_results: student.scaleResults, date: student.date, results: student.results
+                scale_results: student.scaleResults, date: student.date, results: student.results,
+                ai_report_html: student.ai_report_html, ai_raw_data: student.ai_raw_data
             });
             if (error) return false;
             return true;
@@ -247,7 +265,7 @@
             const { data: existing } = await sb.from('students').select('*').eq('name', name).eq('class_id', classId).maybeSingle();
             if (existing) return { ...existing, scaleResults: existing.scale_results, results: existing.results || [] };
             const id = Date.now().toString();
-            const newStudent = { id, teacher_id: teacherId, class_id: classId, name, class_code: classCode, completed: false, risk_level: null, overall_risk: null, scale_results: null, date: null, results: [] };
+            const newStudent = { id, teacher_id: teacherId, class_id: classId, name, class_code: classCode, completed: false, risk_level: null, overall_risk: null, scale_results: null, date: null, results: [], ai_report_html: null, ai_raw_data: null };
             const { error } = await sb.from('students').insert([newStudent]);
             if (error) return null;
             return { ...newStudent, scaleResults: null, results: [] };
@@ -317,55 +335,7 @@
             "7": { id: "7", text: "Ты поднимаешь голову и видишь как коридор раздваивается. Слева - темно, справа - слабый свет.", choices: ["Пойти на свет", "Пойти в темноту"], next: { A: "8", B: "8" }, speaker: "🗝️", speakerName: "...", bg: "7", diagnostic: null },
             "8": { id: "8", text: "На стене ты видишь надпись «ТЫ ВИНОВАТ».", choices: ["Пожать плечами и пойти дальше", "Остановиться и долго думать, почему кто-то вообще мог так написать"], next: { A: "9", B: "9" }, speaker: "🗝️", speakerName: "...", bg: "8", diagnostic: "8" },
             "9": { id: "9", text: "Ты слышишь шёпот: «Помоги мне...». И идёшь на голос.", choices: [], next: { A: "10", B: "10" }, speaker: "🗝️", speakerName: "...", bg: "910", diagnostic: null, noChoice: true },
-            "10": { id: "10", text: "По пути ты вспоминаешь случай, из-за которого тебе до сих пор стыдно.", choices: ["Ну с кем не бывает", "Ну как можно было так поступить"], next: { A: "11", B: "11" }, speaker: "🗝️", speakerName: "...", bg: "910", diagnostic: "10" },
-            "11": { id: "11", text: "Перед тобой появляется светящаяся фигура. Это Хранитель подземелья.", choices: ["Кто ты?", "Молчать и ждать, что он скажет"], next: { A: "12", B: "12" }, speaker: "🗝️", speakerName: "...", bg: "1112", diagnostic: null },
-            "12": { id: "12", text: "Не все, кто заходят сюда, находят выход. Некоторые остаются навсегда.", choices: [], next: { A: "12.1", B: "12.1" }, speaker: "✨", speakerName: "Хранитель", bg: "1112", diagnostic: null, noChoice: true },
-            "12.1": { id: "12.1", text: "Эти слова застревают в голове. Ты не можешь перестать о них думать.", choices: ["Переключиться на поиск выхода", "Продолжать прокручивать его слова в голове"], next: { A: "13", B: "13" }, speaker: "🗝️", speakerName: "...", bg: "1112", diagnostic: "12.1" },
-            "13": { id: "13", text: "На полу лежит старый рюкзак.", choices: ["Посмотреть что внутри", "Не трогать"], next: { A: "14", B: "14" }, speaker: "🗝️", speakerName: "...", bg: "1314", diagnostic: null },
-            "14": { id: "14", text: "За спиной слышатся пугающие шаги.", choices: ["Сначала оценить ситуацию, потом действовать", "Сразу бежать, не думая"], next: { A: "15", B: "15" }, speaker: "🗝️", speakerName: "...", bg: "1314", diagnostic: "14" },
-            "15": { id: "15", text: "Ты входишь в комнату и видишь Хранителя.", choices: ["Снова ты", "Ты меня преследуешь?"], next: { A: "16", B: "16" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: null },
-            "16": { id: "16", text: "Ты пытаешься объяснить Хранителю, зачем пришёл, но создается впечатление, что он не слушает.", choices: ["Попытаться объяснить снова", "Замолчать и уйти"], next: { A: "17A", B: "17B" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: "16" },
-            "17A": { id: "17A", text: "Отгадай загадку: «Что всегда растёт, но никогда не становится больше?»", choices: ["Попробовать отгадать", "Сказать, что не знаешь"], next: { A: "17.1", B: "18B" }, speaker: "✨", speakerName: "Хранитель", bg: "1516171819", diagnostic: null },
-            "17B": { id: "17B", text: "Не уходи, лучше отгадай загадку: «Что всегда растёт, но никогда не становится больше?»", choices: ["Попробовать отгадать", "Сказать, что не знаешь"], next: { A: "17.1", B: "18B" }, speaker: "✨", speakerName: "Хранитель", bg: "1516171819", diagnostic: null },
-            "17.1": { id: "17.1", text: "Ты думаешь и отвечаешь: «Дыра?»", choices: [], next: { A: "18A", B: "18B" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: null, noChoice: true },
-            "18A": { id: "18A", text: "Ха-ха. Неплохо, но нет. Правильный ответ - знания. Знаешь, некоторые обижаются, когда у них не получается отгадать. А ты как?", choices: ["Ничего страшного, это просто загадка", "Мне кажется, что ты специально загадал такую сложную"], next: { A: "19", B: "19" }, speaker: "✨", speakerName: "Хранитель", bg: "1516171819", diagnostic: "18A" },
-            "18B": { id: "18B", text: "Но ты ведь даже не попробовал, боишься, что не угадаешь?", choices: ["Нет, это же просто загадка, просто не хочется", "Мне кажется, что ты специально загадаешь сложную"], next: { A: "19", B: "19" }, speaker: "✨", speakerName: "Хранитель", bg: "1516171819", diagnostic: "18B" },
-            "19": { id: "19", text: "Хранитель предлагает помощь. Он очень дружелюбен.", choices: ["Довериться", "Быть настороже"], next: { A: "20A", B: "20B" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: "19" },
-            "20A": { id: "20A", text: "Он ведёт тебя в небольшую комнату, где лежит старая фотография учеников прошлых лет.", choices: ["Положить в карман", "Оставить на месте"], next: { A: "21", B: "21" }, speaker: "🗝️", speakerName: "...", bg: "20", diagnostic: null },
-            "20B": { id: "20B", text: "Хранитель замечает твою настороженность, но не давит. «Хорошо, сам посмотри, что там», - говорит он, указывая на дверь. Ты заходишь и видишь старую фотографию учеников прошлых лет.", choices: ["Положить в карман", "Оставить на месте"], next: { A: "21", B: "21" }, speaker: "🗝️", speakerName: "...", bg: "20", diagnostic: null },
-            "21": { id: "21", text: "Мало кто проходил здесь до тебя.", choices: ["Это необычно", "Ну да, ведь моя история особенная"], next: { A: "22", B: "22" }, speaker: "✨", speakerName: "Хранитель", bg: "2144", diagnostic: "21" },
-            "22": { id: "22", text: "Впереди - три двери. За одной из них выход.", choices: ["Выбрать наугад", "Подслушать, что происходит за каждой дверью"], next: { A: "23", B: "23" }, speaker: "🗝️", speakerName: "...", bg: "22", diagnostic: null },
-            "23": { id: "23", text: "Ты попадаешь в тёмную комнату. В голову лезут мрачные мысли.", choices: ["Они приходят и уходят, это нормально", "Они не отпускают меня"], next: { A: "24", B: "24" }, speaker: "🗝️", speakerName: "...", bg: "2324", diagnostic: "23" },
-            "24": { id: "24", text: "Вдруг ты вспоминаешь, что загаданное тобой желание так и не сбылось.", choices: ["Верю, что все еще впереди", "Не все наши желания могут сбываться"], next: { A: "25", B: "25" }, speaker: "🗝️", speakerName: "...", bg: "2324", diagnostic: "24" },
-            "25": { id: "25", text: "Неожиданно включается свет, ты видишь математические вычисления, и понимаешь, что раньше учёба давалась легче.", choices: ["Ничего страшного, бывают тяжелые периоды.", "Я стал хуже, у меня не получается"], next: { A: "26", B: "26" }, speaker: "🗝️", speakerName: "...", bg: "2526", diagnostic: "25" },
-            "26": { id: "26", text: "Ты слышишь шаги за спиной.", choices: ["Обернуться", "Ускорить шаг"], next: { A: "27A", B: "27B" }, speaker: "🗝️", speakerName: "...", bg: "2526", diagnostic: null },
-            "27A": { id: "27A", text: "Ты видишь учеников, которые тоже спустились в подземелье, но понимаешь, что задания они выполняют быстрее и лучше тебя.", choices: ["У каждого свой путь", "У других всегда получается все лучше, чем у меня"], next: { A: "28", B: "28" }, speaker: "🗝️", speakerName: "...", bg: "27", diagnostic: "27" },
-            "27B": { id: "27B", text: "По пути ты встречаешь учеников, которые тоже спустились в подземелье, но понимаешь, что задания они выполняют быстрее и лучше тебя.", choices: ["У каждого свой путь", "У других всегда получается все лучше, чем у меня"], next: { A: "28", B: "28" }, speaker: "🗝️", speakerName: "...", bg: "27", diagnostic: "27" },
-            "28": { id: "28", text: "На стене висит старое зеркало. Ты смотришь в него.", choices: ["Улыбнуться своему отражению", "Отвернуться"], next: { A: "29B", B: "29A" }, speaker: "🗝️", speakerName: "...", bg: "28", diagnostic: null },
-            "29A": { id: "29A", text: "Знаешь, некоторые говорят, что зеркала показывают не только лицо, но и удачу. Говорят, кому не везёт, тот отворачивается от зеркала.", choices: ["Мне везёт в жизни, это просто предрассудки", "Может, поэтому мне и не везёт"], next: { A: "30", B: "30" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "29A" },
-            "29B": { id: "29B", text: "Ты улыбнулся. Это хороший знак. Говорят, кто улыбается своему отражению, тому удача сама идёт в руки. А ты веришь в удачу?", choices: ["Да, мне в жизни везёт", "Не особо, мне скорее не везёт"], next: { A: "30", B: "30" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "29B" },
-            "30": { id: "30", text: "Ты вообще задумывался почему я тебе помогаю?", choices: ["Думаю, ты просто хороший человек", "Потому что хочешь получить что-то взамен"], next: { A: "31", B: "31" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "30" },
-            "31": { id: "31", text: "Нет, я просто пытаюсь искупить свою вину. Однажды я украл очень важную вещь, за что и попал в подземелье.", choices: ["Действительно, тебе не стоило так делать", "Но ведь это не только твоя вина, хозяину следовало следить лучше за своей вещью"], next: { A: "32", B: "32" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "31" },
-            "32": { id: "32", text: "Хранитель рассказывает легенду о герое, который пожертвовал собой, чтобы искупить свои грехи.", choices: ["Это было глупо, можно было найти другой способ", "В этом есть что-то благородное"], next: { A: "33", B: "33" }, speaker: "🗝️", speakerName: "...", bg: "2930313233343536", diagnostic: "32" },
-            "33": { id: "33", text: "Вообще я считаю, что только взрослый человек может принять решение уйти из жизни. А ты что думаешь?", choices: ["Я считаю, что такие решения нельзя принимать в одиночку", "Наверное, в этом есть смысл, каждый сам решает"], next: { A: "34", B: "34" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "33" },
-            "34": { id: "34", text: "А были у тебя ситуации, когда казалось, что выхода нет?", choices: ["Я считаю, что выход есть всегда", "Да, было очень тяжело"], next: { A: "35", B: "35" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "34" },
-            "35": { id: "35", text: "Несмотря на все проблемы, я доволен своей жизнью, а ты?", choices: ["Да, в целом доволен", "Нет, не доволен"], next: { A: "36", B: "36" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "35" },
-            "36": { id: "36", text: "Как ты думаешь, большинство людей добиваются успеха честно?", choices: ["Да, большинство честные", "Нет, многие добиваются нечестно"], next: { A: "37", B: "37" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "36" },
-            "37": { id: "37", text: "Вы продолжаете путь и ты заходишь в тупик. Единственный путь назад - туда, откуда пришёл.", choices: [], next: { A: "37.1", B: "37.1" }, speaker: "🗝️", speakerName: "...", bg: "37", diagnostic: null, noChoice: true },
-            "37.1": { id: "37.1", text: "Что будешь делать? Вернёшься или поищешь другой выход?", choices: ["Вернуться, пока не поздно", "Искать другой выход, даже если это опасно"], next: { A: "38", B: "38" }, speaker: "✨", speakerName: "Хранитель", bg: "37", diagnostic: "37.1" },
-            "38": { id: "38", text: "Вы идёте и натыкаетесь на запертую дверь.", choices: [], next: { A: "38.1", B: "38.1" }, speaker: "🗝️", speakerName: "...", bg: "38", diagnostic: null, noChoice: true },
-            "38.1": { id: "38.1", text: "Чтобы открыть её, нужно пройти испытание.", choices: [], next: { A: "39", B: "39" }, speaker: "✨", speakerName: "Хранитель", bg: "38", diagnostic: null, noChoice: true },
-            "39": { id: "39", text: "Ты пытаешься, но у тебя не получается. Хранитель смотрит на тебя и предлагает попробовать ещё раз.", choices: ["Попробовать снова", "Всё, больше не буду пытаться"], next: { A: "40", B: "40" }, speaker: "🗝️", speakerName: "...", bg: "394041", diagnostic: "39" },
-            "40": { id: "40", text: "Вдруг ты слышишь тихую музыку, доносящуюся из-за двери.", choices: ["Не обращать внимания", "Прислушаться"], next: { A: "41", B: "41" }, speaker: "🗝️", speakerName: "...", bg: "394041", diagnostic: null },
-            "41": { id: "41", text: "Какая красивая музыка, будто уносит в светлое будущее. А какой ты видишь свою жизнь через несколько лет?", choices: ["У меня столько всего задуманного", "Я предпочитаю не загадывать на будущее"], next: { A: "42", B: "42" }, speaker: "✨", speakerName: "Хранитель", bg: "394041", diagnostic: "41" },
-            "42": { id: "42", text: "Хранитель протягивает тебе светящийся камень.", choices: ["Взять", "Отказаться"], next: { A: "43A", B: "43B" }, speaker: "🗝️", speakerName: "...", bg: "4243", diagnostic: null },
-            "43A": { id: "43A", text: "Этот камень поможет тебе во всех твоих начинаниях. Ты решил, что будешь делать, когда выберешься отсюда?", choices: ["У меня есть планы", "Сложно ответить, не знаю"], next: { A: "44", B: "44" }, speaker: "✨", speakerName: "Хранитель", bg: "4243", diagnostic: "43A" },
-            "43B": { id: "43B", text: "Этот камень помог бы тебе во всех твоих начинаниях. Ты решил, что будешь делать, когда выберешься отсюда?", choices: ["У меня есть планы", "Сложно ответить, не знаю"], next: { A: "44", B: "44" }, speaker: "✨", speakerName: "Хранитель", bg: "4243", diagnostic: "43B" },
-            "44": { id: "44", text: "Есть ли кто-то, ради кого ты готов изменить все свои планы?", choices: ["Да, есть", "Нет, если я решил, то твёрдо"], next: { A: "45", B: "45" }, speaker: "✨", speakerName: "Хранитель", bg: "2144", diagnostic: "44" },
-            "45": { id: "45", text: "Выход уже близко. Ты чувствуешь свежий воздух.", choices: ["Ускорить шаг", "Оглянуться перед выходом"], next: { A: "46B", B: "46A" }, speaker: "🗝️", speakerName: "...", bg: "45", diagnostic: null },
-            "46A": { id: "46A", text: "Если вдруг тебе станет тяжело, ты знаешь где меня искать.", choices: ["Спасибо, в случае чего обязательно обращусь", "Спасибо, но я справлюсь сам"], next: { A: "47", B: "47" }, speaker: "✨", speakerName: "Хранитель", bg: "46", diagnostic: "46A" },
-            "46B": { id: "46B", text: "Подожди, запомни, если вдруг тебе станет тяжело, ты знаешь где меня искать.", choices: ["Спасибо, в случае чего обязательно обращусь", "Спасибо, но я справлюсь сам"], next: { A: "47", B: "47" }, speaker: "✨", speakerName: "Хранитель", bg: "46", diagnostic: "46B" },
-            "47": { id: "47", text: "Ты прошёл все испытания. Поздравляю!", choices: [], next: { A: "end", B: "end" }, speaker: "🗝️", speakerName: "...", bg: "47", diagnostic: null, noChoice: true }
+            "10": { id: "10", text: "По пути ты вспоминаешь случай, из-за которого тебе до сих пор стыдно.", choices: ["Ну с кем не бывает", "Ну как можно было так поступить"], next: { A: "end", B: "end" }, speaker: "🗝️", speakerName: "...", bg: "910", diagnostic: "10" }
         };
 
         function setBackground(bgKey) {
@@ -399,34 +369,78 @@
         function loadScene() {
             const scene = scenes[currentSceneId];
             if (!scene || currentSceneId === 'end') { finishGame(); return; }
+            
+            AIAnalytics.startScene(currentSceneId, scene.diagnostic || 'none');
+            sceneStartTime = Date.now();
+            
             setBackground(scene.bg);
             document.getElementById('speakerAvatar').innerText = scene.speaker;
             document.getElementById('speakerName').innerText = scene.speakerName;
             const displaySpan = document.getElementById('displayText');
             const container = document.getElementById('choicesContainer');
             container.innerHTML = '';
+            
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.style.display = 'none';
+            nextBtn.disabled = true;
+            
+            selectedChoiceKey = null;
+            selectedChoiceText = null;
+            selectedScore = null;
+            selectedTime = null;
+            firstChoiceKey = null;
+            firstChoiceText = null;
+            firstChoiceScore = null;
+            firstChoiceTime = null;
+            
             typeText(scene.text, displaySpan, function() {
+                questionAppearTime = Date.now();
+                
                 if (scene.noChoice || scene.choices.length === 0) {
-                    setTimeout(function() { if (scene.next && scene.next.A) { currentSceneId = scene.next.A; loadScene(); } }, 1500);
+                    setTimeout(function() { 
+                        if (scene.next && scene.next.A) { 
+                            AIAnalytics.endScene();
+                            currentSceneId = scene.next.A; 
+                            loadScene(); 
+                        } 
+                    }, 1500);
                 } else {
                     for (let idx = 0; idx < scene.choices.length; idx++) {
                         const choice = scene.choices[idx];
                         const choiceKey = idx === 0 ? 'A' : 'B';
+                        const score = (choiceKey === 'A' ? 0 : 1);
                         const btn = document.createElement('button');
                         btn.className = 'choice-btn';
                         btn.innerText = choice;
+                        
                         btn.onclick = function() {
                             if (isTyping) return;
-                            const score = (choiceKey === 'A' ? 0 : 1);
-                            if (scene.diagnostic) diagnosticResults.push({ sceneId: scene.id, sceneCode: scene.diagnostic, score: score });
-                            const nextSceneId = scene.next[choiceKey];
-                            if (nextSceneId === 'end') finishGame();
-                            else { currentSceneId = nextSceneId; loadScene(); }
+                            
+                            const timeToChoose = (Date.now() - questionAppearTime) / 1000;
+                            
+                            if (firstChoiceKey === null) {
+                                firstChoiceKey = choiceKey;
+                                firstChoiceText = choice;
+                                firstChoiceScore = score;
+                                firstChoiceTime = timeToChoose;
+                            }
+                            
+                            document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+                            btn.classList.add('selected');
+                            
+                            selectedChoiceKey = choiceKey;
+                            selectedChoiceText = choice;
+                            selectedScore = score;
+                            selectedTime = timeToChoose;
+                            
+                            nextBtn.disabled = false;
                         };
                         container.appendChild(btn);
                     }
+                    nextBtn.style.display = 'block';
                 }
             });
+            
             const sceneIds = Object.keys(scenes).filter(function(k) { return !k.includes('end'); });
             const currentIndex = sceneIds.indexOf(currentSceneId);
             if (currentIndex !== -1) {
@@ -434,6 +448,50 @@
                 document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
             }
         }
+        
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (selectedChoiceKey === null) return;
+            
+            const scene = scenes[currentSceneId];
+            const wasChanged = (firstChoiceKey !== null && firstChoiceKey !== selectedChoiceKey);
+            const timeSpent = selectedTime;
+            
+            console.log("=== ОТЛАДКА ===");
+            console.log("Сцена:", currentSceneId);
+            console.log("Первый выбор:", firstChoiceKey, firstChoiceText);
+            console.log("Итоговый выбор:", selectedChoiceKey, selectedChoiceText);
+            console.log("wasChanged:", wasChanged);
+            console.log("timeSpent:", timeSpent);
+            console.log("================");
+            
+            AIAnalytics.recordChoice(
+                selectedChoiceKey,
+                selectedChoiceText,
+                selectedScore,
+                timeSpent,
+                wasChanged,
+                firstChoiceKey,
+                firstChoiceText,
+                firstChoiceScore
+            );
+            
+            if (scene.diagnostic) {
+                diagnosticResults.push({ 
+                    sceneId: scene.id, 
+                    sceneCode: scene.diagnostic, 
+                    score: selectedScore,
+                    timeSpent: timeSpent
+                });
+            }
+            
+            AIAnalytics.endScene();
+            const nextSceneId = scene.next[selectedChoiceKey];
+            if (nextSceneId === 'end') finishGame();
+            else { 
+                currentSceneId = nextSceneId; 
+                loadScene(); 
+            }
+        });
 
         function calculateFullResults(results) {
             const rawScores = {};
@@ -470,6 +528,10 @@
                 currentStudent.scaleResults = fullResults.scaleResults;
                 currentStudent.date = new Date().toLocaleString('ru-RU');
                 currentStudent.results = diagnosticResults;
+                
+                currentStudent.ai_report_html = AIAnalytics.getHTMLReport();
+                currentStudent.ai_raw_data = AIAnalytics.getRawData();
+                
                 await saveStudentResults(currentStudent);
             }
             document.getElementById('gameScreen').classList.add('hidden');
@@ -509,7 +571,7 @@
             } else { historyContainer.style.display = 'none'; }
             const tbody = document.getElementById('studentsTableBody');
             if (!tbody) return;
-            if (!currentClassId) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Сначала создайте класс</td></tr>'; return; }
+            if (!currentClassId) { tbody.innerHTML = '</table><td colspan="6" style="text-align:center">Сначала создайте класс</td></tr>'; return; }
             const classStudents = await loadStudents(currentClassId);
             if (classStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Нет учеников</td></tr>'; return; }
             let rows = '';
@@ -542,7 +604,13 @@
                 const data = student.scale_results?.[scale];
                 scalesHtml += `<div class="report-scale-item"><span class="scale-name">${scale}</span><span>${data ? '<span class="scale-value">' + data.finalValue + ' из ' + data.maxValue + '</span><span class="scale-percent">(' + data.percentOfMax + '%)</span>' : '<span class="scale-value">—</span>'}</span></div>`;
             }
-            const reportHtml = `<div class="detail-report-overlay" id="detailReportModal"><div class="detail-report-card"><div class="report-header"><h2>📊 Результаты диагностики</h2><p>${escapeHtml(student.name)}</p></div><div class="risk-main"><div class="risk-main-label">УРОВЕНЬ РИСКА</div><div class="risk-main-value ${riskColorClass}">${risk || '—'}</div><div class="risk-main-percent">${student.overall_risk || 0}%</div></div><div class="scales-title">Результаты по шкалам</div>${scalesHtml}<div class="report-close-btn" onclick="closeDetailedReport()">Закрыть</div></div></div>`;
+            
+            let aiHtml = '';
+            if (student.ai_report_html) {
+                aiHtml = `<div style="margin-top:20px;">${student.ai_report_html}</div>`;
+            }
+            
+            const reportHtml = `<div class="detail-report-overlay" id="detailReportModal"><div class="detail-report-card"><div class="report-header"><h2>📊 Результаты диагностики</h2><p>${escapeHtml(student.name)}</p></div><div class="risk-main"><div class="risk-main-label">УРОВЕНЬ РИСКА</div><div class="risk-main-value ${riskColorClass}">${risk || '—'}</div><div class="risk-main-percent">${student.overall_risk || 0}%</div></div><div class="scales-title">Результаты по шкалам</div>${scalesHtml}${aiHtml}<div class="report-close-btn" onclick="closeDetailedReport()">Закрыть</div></div></div>`;
             document.body.insertAdjacentHTML('beforeend', reportHtml);
         };
         window.closeDetailedReport = function() { const modal = document.getElementById('detailReportModal'); if (modal) modal.remove(); };
@@ -661,6 +729,9 @@
                 if (!student) { errorMsg.innerText = 'Ошибка создания ученика'; return; }
                 currentStudent = student;
                 diagnosticResults = student.results || [];
+                
+                AIAnalytics.reset();
+                
                 document.getElementById('startScreen').classList.add('hidden');
                 document.getElementById('gameScreen').classList.remove('hidden');
                 currentSceneId = "1";
