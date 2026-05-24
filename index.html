@@ -179,7 +179,7 @@
                         <thead>
                             <tr><th>ФИО</th><th>Код</th><th>Статус</th><th>Уровень риска</th><th>Дата</th><th>Действие</th></tr>
                         </thead>
-                        <tbody id="studentsTableBody"><tr><td colspan="6" style="text-align:center">Нет учеников</td></tr></tbody>
+                        <tbody id="studentsTableBody"><tr><td colspan="6" style="text-align:center">Нет учеников</tr</tbody>
                     </table>
                 </div>
             </div>
@@ -187,6 +187,13 @@
     </div>
 
     <script>
+    // ========== ФУНКЦИЯ ГЕНЕРАЦИИ УНИКАЛЬНОГО КОДА ==========
+    function generateParticipantCode() {
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(2, 10).toUpperCase();
+        return `P-${timestamp}-${random}`;
+    }
+
     // ========== SUPABASE НАСТРОЙКИ ==========
     document.addEventListener('DOMContentLoaded', async function() {
         const SUPABASE_URL = 'https://rhjaoewcnbuzfinkioji.supabase.co';
@@ -220,12 +227,11 @@
         let sceneScales = {};
         let scenes = {};
 
-               // ========== ЗАГРУЗКА ДАННЫХ ИЗ SUPABASE ==========
+        // ========== ЗАГРУЗКА ДАННЫХ ИЗ SUPABASE ==========
         async function loadScalesAndScenes() {
             try {
                 console.log("Начинаем загрузку данных из БД...");
                 
-                // Загружаем шкалы
                 const { data: scalesData, error: scalesError } = await sb.from('scales').select('*');
                 if (scalesError) throw scalesError;
                 console.log("scalesData загружено:", scalesData?.length);
@@ -235,7 +241,6 @@
                     scalesConfig[s.name] = { coef: s.coefficient, maxVal: s.max_value };
                 });
                 
-                // Загружаем привязку сцен к шкалам
                 const { data: sceneScalesData, error: sceneScalesError } = await sb.from('scene_scales').select('*');
                 if (sceneScalesError) throw sceneScalesError;
                 console.log("sceneScalesData загружено:", sceneScalesData?.length);
@@ -246,18 +251,15 @@
                     sceneScales[ss.scene_id].push(ss.scale_name);
                 });
                 
-                // Загружаем сцены
                 const { data: scenesData, error: scenesError } = await sb.from('scenes').select('*');
                 if (scenesError) throw scenesError;
                 console.log("scenesData получено:", scenesData);
                 console.log("scenesData.length:", scenesData?.length);
                 
-                // Загружаем выборы
                 const { data: choicesData, error: choicesError } = await sb.from('scene_choices').select('*');
                 if (choicesError) throw choicesError;
                 console.log("choicesData загружено:", choicesData?.length);
                 
-                // Собираем объект scenes
                 scenes = {};
                 scenesData.forEach(scene => {
                     const sceneChoices = choicesData.filter(c => c.scene_id === scene.id).sort((a,b) => a.choice_key.localeCompare(b.choice_key));
@@ -325,7 +327,8 @@
                 name: student.name, class_code: student.class_code, completed: student.completed,
                 risk_level: student.riskLevel, overall_risk: student.overallRiskPercent,
                 scale_results: student.scaleResults, date: student.date, results: student.results,
-                ai_report_html: student.ai_report_html, ai_raw_data: student.ai_raw_data
+                ai_report_html: student.ai_report_html, ai_raw_data: student.ai_raw_data,
+                participant_code: student.participant_code
             });
             if (error) return false;
             return true;
@@ -334,7 +337,7 @@
             const { data: existing } = await sb.from('students').select('*').eq('name', name).eq('class_id', classId).maybeSingle();
             if (existing) return { ...existing, scaleResults: existing.scale_results, results: existing.results || [] };
             const id = Date.now().toString();
-            const newStudent = { id, teacher_id: teacherId, class_id: classId, name, class_code: classCode, completed: false, risk_level: null, overall_risk: null, scale_results: null, date: null, results: [], ai_report_html: null, ai_raw_data: null };
+            const newStudent = { id, teacher_id: teacherId, class_id: classId, name, class_code: classCode, completed: false, risk_level: null, overall_risk: null, scale_results: null, date: null, results: [], ai_report_html: null, ai_raw_data: null, participant_code: null };
             const { error } = await sb.from('students').insert([newStudent]);
             if (error) return null;
             return { ...newStudent, scaleResults: null, results: [] };
@@ -595,9 +598,9 @@
             } else { historyContainer.style.display = 'none'; }
             const tbody = document.getElementById('studentsTableBody');
             if (!tbody) return;
-            if (!currentClassId) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Сначала создайте класс</td></tr>'; return; }
+            if (!currentClassId) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Сначала создайте класс</tr</tbody>'; return; }
             const classStudents = await loadStudents(currentClassId);
-            if (classStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Нет учеников</td></tr>'; return; }
+            if (classStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Нет учеников</tr</tbody>'; return; }
             let rows = '';
             for (let s of classStudents) {
                 let riskClass = '', riskText = '';
@@ -760,6 +763,17 @@
                 if (!student) { errorMsg.innerText = 'Ошибка создания ученика'; return; }
                 currentStudent = student;
                 diagnosticResults = student.results || [];
+                
+                // ===== ГЕНЕРАЦИЯ УНИКАЛЬНОГО КОДА ДЛЯ ОПРОСНИКА =====
+                const participantCode = generateParticipantCode();
+                await sb.from('students').update({ 
+                    participant_code: participantCode 
+                }).eq('id', currentStudent.id);
+                currentStudent.participant_code = participantCode;
+                
+                // Показываем код пользователю
+                alert(`Ваш уникальный код для опросника:\n${participantCode}\n\nСохраните его! Он понадобится для заполнения формы психолога.`);
+                // ===================================================
                 
                 AIAnalytics.reset();
                 
