@@ -6,7 +6,6 @@
     <title>Тайна старой школы — квест</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="aiAnalytics.js"></script>
-    <script src="scenes.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a0f; min-height: 100vh; color: #e2e8f0; touch-action: manipulation; }
@@ -188,9 +187,8 @@
     </div>
 
     <script>
-    
     // ========== SUPABASE НАСТРОЙКИ ==========
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
         const SUPABASE_URL = 'https://rhjaoewcnbuzfinkioji.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoamFvZXdjbmJ1emZpbmtpb2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNzU5ODQsImV4cCI6MjA5NDc1MTk4NH0.xMjuIbeLi_MJ6dsoMyrFVZCBy8BGQsIutIVpeKqjXSk';
 
@@ -216,6 +214,77 @@
         let firstChoiceText = null;
         let firstChoiceScore = null;
         let firstChoiceTime = null;
+
+        // ========== ДАННЫЕ ИЗ БАЗЫ ==========
+        let scalesConfig = {};
+        let sceneScales = {};
+        let scenes = {};
+
+               // ========== ЗАГРУЗКА ДАННЫХ ИЗ SUPABASE ==========
+        async function loadScalesAndScenes() {
+            try {
+                console.log("Начинаем загрузку данных из БД...");
+                
+                // Загружаем шкалы
+                const { data: scalesData, error: scalesError } = await sb.from('scales').select('*');
+                if (scalesError) throw scalesError;
+                console.log("scalesData загружено:", scalesData?.length);
+                
+                scalesConfig = {};
+                scalesData.forEach(s => {
+                    scalesConfig[s.name] = { coef: s.coefficient, maxVal: s.max_value };
+                });
+                
+                // Загружаем привязку сцен к шкалам
+                const { data: sceneScalesData, error: sceneScalesError } = await sb.from('scene_scales').select('*');
+                if (sceneScalesError) throw sceneScalesError;
+                console.log("sceneScalesData загружено:", sceneScalesData?.length);
+                
+                sceneScales = {};
+                sceneScalesData.forEach(ss => {
+                    if (!sceneScales[ss.scene_id]) sceneScales[ss.scene_id] = [];
+                    sceneScales[ss.scene_id].push(ss.scale_name);
+                });
+                
+                // Загружаем сцены
+                const { data: scenesData, error: scenesError } = await sb.from('scenes').select('*');
+                if (scenesError) throw scenesError;
+                console.log("scenesData получено:", scenesData);
+                console.log("scenesData.length:", scenesData?.length);
+                
+                // Загружаем выборы
+                const { data: choicesData, error: choicesError } = await sb.from('scene_choices').select('*');
+                if (choicesError) throw choicesError;
+                console.log("choicesData загружено:", choicesData?.length);
+                
+                // Собираем объект scenes
+                scenes = {};
+                scenesData.forEach(scene => {
+                    const sceneChoices = choicesData.filter(c => c.scene_id === scene.id).sort((a,b) => a.choice_key.localeCompare(b.choice_key));
+                    scenes[scene.id] = {
+                        id: scene.id,
+                        text: scene.text,
+                        choices: sceneChoices.map(c => c.choice_text),
+                        next: { A: scene.next_a, B: scene.next_b },
+                        speaker: scene.speaker,
+                        speakerName: scene.speaker_name,
+                        bg: scene.bg,
+                        diagnostic: scene.diagnostic_code,
+                        noChoice: scene.no_choice
+                    };
+                });
+                
+                console.log("Данные загружены из БД:", { 
+                    scalesCount: Object.keys(scalesConfig).length, 
+                    sceneScalesCount: Object.keys(sceneScales).length, 
+                    scenesCount: Object.keys(scenes).length 
+                });
+                return true;
+            } catch (error) {
+                console.error("Ошибка загрузки данных из БД:", error);
+                return false;
+            }
+        }
 
         // ========== ФУНКЦИИ SUPABASE ==========
         async function loadTeacher(login) {
@@ -291,92 +360,7 @@
             });
         }
 
-        // ========== ШКАЛЫ ==========
-        const scalesConfig = {
-            "Демонстративность": { coef: 1.2, maxVal: 6 },
-            "Аффективность": { coef: 1.1, maxVal: 6.6 },
-            "Уникальность": { coef: 1.2, maxVal: 6 },
-            "Несостоятельность": { coef: 1.5, maxVal: 7.5 },
-            "Социальный пессимизм": { coef: 1, maxVal: 6 },
-            "Слом культурных барьеров": { coef: 2.3, maxVal: 6.9 },
-            "Максимализм": { coef: 3.2, maxVal: 6.4 },
-            "Временная перспектива": { coef: 1.1, maxVal: 6.6 },
-            "Антисуицидальный фактор": { coef: 3.2, maxVal: 6.4 }
-        };
-        const sceneScales = {
-            "2": ["Аффективность", "Уникальность"], "3A": ["Демонстративность", "Уникальность", "Временная перспектива"],
-            "3B": ["Демонстративность", "Уникальность", "Временная перспектива"], "5": ["Аффективность"],
-            "6": ["Демонстративность", "Аффективность"], "8": ["Аффективность"], "11": ["Аффективность"],
-            "12": ["Аффективность"], "14": ["Демонстративность", "Уникальность"],
-            "16A": ["Демонстративность", "Уникальность", "Социальный пессимизм"],
-            "16B": ["Демонстративность", "Уникальность", "Социальный пессимизм"], "17": ["Социальный пессимизм"],
-            "19": ["Демонстративность", "Уникальность", "Временная перспектива"],
-            "20": ["Несостоятельность", "Временная перспектива"], "21": ["Несостоятельность", "Временная перспектива"],
-            "22": ["Несостоятельность"], "23": ["Несостоятельность"], "24": ["Социальный пессимизм"],
-            "25": ["Социальный пессимизм"], "26": ["Социальный пессимизм"], 
-            "27": ["Слом культурных барьеров"], "28": ["Слом культурных барьеров"], "30": ["Максимализм"],
-            "31": ["Антисуицидальный фактор"], "33": ["Социальный пессимизм"], "35": ["Слом культурных барьеров"],
-            "37": ["Максимализм"], "39": ["Временная перспектива"], "41": ["Временная перспектива"],
-            "42": ["Антисуицидальный фактор"], "44": ["Несостоятельность"]
-        };
         const gradientFallback = 'linear-gradient(135deg, #1a1a2e, #16213e)';
-
-       // ========== СЦЕНЫ ==========
-        const scenes = {
-             "1": { id: "1", text: "Ты стоишь у входа в старую школу. Изнутри доносится странный шум.", choices: [], next: { A: "2", B: "2" }, speaker: "🗝️", speakerName: "...", bg: "1", diagnostic: null, noChoice: true },
-            "2": { id: "2", text: "Зайдя внутрь внезапно за спиной хлопает дверь. Сердце начинает биться быстрее.", choices: ["Идти дальше", "Прислониться к стене и перевести дух "], next: { A: "3A", B: "3B" }, speaker: "🗝️", speakerName: "...", bg: "2", diagnostic: "2" },
-            "3A": { id: "3A", text: "На пути виднеется тупик. Выхода не видно.", choices: ["Искать выход", "Сесть на ступеньку и ждать"], next: { A: "4", B: "4" }, speaker: "🗝️", speakerName: "...", bg: "3", diagnostic: "3A" },
-            "3B": { id: "3B", text: "Придя в себя, ты идёшь по тёмному коридору. На пути виднеется тупик. Выхода не видно.", choices: ["Искать выход", "Сесть на ступеньку и ждать"], next: { A: "4", B: "4" }, speaker: "🗝️", speakerName: "...", bg: "3", diagnostic: "3B" },
-            "4": { id: "4", text: "Вдруг на полу ты замечаешь старую тетрадь.", choices: [], next: { A: "5", B: "5" }, speaker: "🗝️", speakerName: "...", bg: "5", diagnostic: null, noChoice: true },
-          
-            "5": { id: "5", text: "Чужие записи про день, когда все пошло не так. Ты чувствуешь легкую грусть.", choices: ["Закрыть тетрадь и идти дальше", "Продолжать читать, даже если становится не по себе"], next: { A: "6", B: "6" }, speaker: "🗝️", speakerName: "...", bg: "6", diagnostic: "5" },
-            "6": { id: "6", text: "Подняв голову, ты видишь на стене надпись «ТЫ ВИНОВАТ».", choices: ["Пожать плечами и пойти дальше", "Остановиться и всерьез задуматься"], next: { A: "7", B: "7" }, speaker: "🗝️", speakerName: "...", bg: "8", diagnostic: "6" },
-            "7": { id: "7", text: "Тихий шёпот: «Помоги мне». Ты идешь на голос.", choices: [], next: { A: "8", B: "8" }, speaker: "🗝️", speakerName: "...", bg: "910", diagnostic: null },
-            "8": { id: "8", text: "По пути вспоминается случай, за который до сих пор немного стыдно. Мелочь, а в голове застряла.", choices: ["Ну с кем не бывает  ", "Продолжать думать об этом "], next: { A: "9", B: "9" }, speaker: "🗝️", speakerName: "...", bg: "910", diagnostic: "8" },
-            "9": { id: "9", text: "Перед тобой появляется светящаяся фигура. Это Хранитель подземелья.", choices: [], next: { A: "10", B: "10" }, speaker: "🗝️", speakerName: "...", bg: "1112", diagnostic: null, noChoice: true },
-            "10": { id: "10", text: "Не все, кто заходят сюда, находят выход. Некоторые остаются навсегда. ", choices: [], next: { A: "11", B: "11" }, speaker: "✨", speakerName: "Хранитель", bg: "1112", diagnostic: null, noChoice: true },
-            "11": { id: "11", text: "Эти слова застревают в голове. Ты не можешь перестать о них думать.", choices: ["Переключиться на поиск выхода", "Продолжать думать о сказанных словах"], next: { A: "12", B: "12" }, speaker: "🗝️", speakerName: "...", bg: "1112", diagnostic: "11" },
-            "12": { id: "12", text: "Неожиданно за спиной слышатся пугающие шаги.", choices: ["Обернуться и оценить обстановку", "Бежать не оглядываясь"], next: { A: "13A", B: "13B" }, speaker: "🗝️", speakerName: "...", bg: "1112", diagnostic: "12" },
-            "13A": { id: "13A", text: "Никого. Шаги стихли. Ты спокойно идёшь дальше и входишь в комнату, где снова стоит Хранитель.", choices: [], next: { A: "14", B: "14" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: null, noChoice: true },
-            "13B": { id: "13B", text: "Ты вбегаешь в комнату. Там снова стоит Хранитель.", choices: [], next: { A: "14", B: "14" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: null, noChoice: true },
-            "14": { id: "14", text: "Ты пытаешься объяснить Хранителю о чувствах, которые ощущаешь в этом подземелье. Он слушает, но его взгляд остаётся пустым. ", choices: ["Попробовать объяснить иначе", "Бесполезно, он всё равно не поймёт"], next: { A: "15", B: "15" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: "14" },
-            "15": { id: "15", text: "Отгадай загадку: «Что всегда растёт, но никогда не становится больше?»", choices: ["Попробовать отгадать", "Сказать, что не знаешь"], next: { A: "15.1", B: "16B" }, speaker: "✨", speakerName: "Хранитель", bg: "1516171819", diagnostic: null },
-            "15.1": { id: "15.1", text: "Ты думаешь и отвечаешь: «Дыра?» ", choices: [], next: { A: "16A", B: "16A" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: null, noChoice: true },
-            "16A": { id: "16A", text: ": Неплохо, но нет. Знаешь, некоторые злятся из-за проигрыша.»", choices: ["Ничего страшного, это же просто загадка", "Некоторые правила изначально несправедливы"], next: { A: "17", B: "17" }, speaker: "✨", speakerName: "Хранитель", bg: "1516171819", diagnostic: "16A" },
-            "16B": { id: "16B", text: "Но ты ведь даже не попробовал, боишься, что не угадаешь?", choices: ["Нет, просто не хочется", "Мне кажется, что ты специально загадаешь сложную"], next: { A: "17", B: "17" }, speaker: "✨", speakerName: "Хранитель", bg: "1516171819", diagnostic: "16B" },
-            "17": { id: "17", text: "Хранитель предлагает помощь. Он очень дружелюбен", choices: ["Довериться","Быть настороже"], next: { A: "18A", B: "18B" }, speaker: "🗝️", speakerName: "...", bg: "1516171819", diagnostic: "17"},
-            "18A": { id: "18A", text: "Он ведет тебя в комнату и показывает фотографию учеников прошлых лет.", choices: [], next: { A: "19", B: "19" }, speaker: "🗝️", speakerName: "...", bg: "20", diagnostic: null, noChoice: true },
-            "18B": { id: "18B", text: "Хранитель замечает твою настороженность, но не давит. «Ладно, сам посмотри, что там», - говорит он, указывая на дверь. Ты заходишь и видишь фотографию учеников прошлых лет.", choices: [], next: { A: "19", B: "19" }, speaker: "🗝️", speakerName: "...", bg: "20", diagnostic: null, noChoice: true },
-            "19": { id: "19", text: "Они тоже здесь когда то были, но мало кто проходил здесь до тебя. Это место  для тех, кто чувствует глубже.", choices: ["Звучит необычно", "Моя история точно отличается от других"], next: { A: "20", B: "20" }, speaker: "✨", speakerName: "Хранитель", bg: "20", diagnostic: "19" },
-            "20": { id: "20", text: "В комнате резко темнеет. В голову лезут мрачные мысли.", choices: ["Это состояние скоро пройдёт", "Иногда от таких мыслей невозможно отвлечься"], next: { A: "21", B: "21" }, speaker: "🗝️", speakerName: "...", bg: "2324", diagnostic: "20" },
-            "21": { id: "21", text: "На стене появляются тусклые силуэты того, о чём ты когда-то мечтал. Но изображения быстро исчезают.", choices: ["Верю, что все еще впереди ", "Не всем желаниям суждено сбываться"], next: { A: "22", B: "22" }, speaker: "🗝️", speakerName: "...", bg: "2222", diagnostic: "21"},
-            "22": { id: "22", text: "Вдруг загораются математические вычисления - это испытание. Ты пытаешься решить, но чувствуешь, что раньше справился бы быстрее.", choices: ["У всех бывают сложные периоды", "Раньше у меня получалось лучше"], next: { A: "23", B: "23" }, speaker: "🗝️", speakerName: "...", bg: "2526", diagnostic: "22" },
-            "23": { id: "23", text: "Ты замечаешь других учеников. Кажется, они проходят испытание быстрее и увереннее тебя.", choices: ["У каждого свой темп", "Мне всегда сложнее, чем другим"], next: { A: "23.1", B: "23.1" }, speaker: "🗝️", speakerName: "...", bg: "1111", diagnostic: "23" },
-            "23.1": { id: "23.1", text: "На стене висит старое зеркало. Ты улыбаешься своему отражению.", choices: [], next: { A: "24", B: "24" }, speaker: "🗝️", speakerName: "...", bg: "28", diagnostic: null, noChoice: true },
-            "24": { id: "24", text: "Ты улыбнулся. Это хороший знак. Говорят, кто улыбается своему отражению, тому удача сама идёт в руки. ", choices: ["Это правда, мне в жизни везёт", "Не уверен, я не сильно удачливый"], next: { A: "25", B: "25" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "24" },
-            "25": { id: "25", text: "Ты не задумывался почему я тебе помогаю?", choices: ["Думаю, ты просто хороший человек", "Потому что хочешь получить что то взамен"], next: { A: "26", B: "26" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "25" },
-            "26": { id: "26", text: "На самом деле я пытаюсь искупить свою вину. Однажды я украл очень важную вещь, за что и попал в подземелье.", choices: ["Действительно, тебе не стоило так делать", "Но ведь это не только твоя вина, хозяину следовало следить лучше за своей вещью"], next: { A: "27", B: "27" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "26" },
-            "27": { id: "27", text: "Хранитель рассказывает легенду о герое, который пожертвовал собой, чтобы искупить свои грехи.", choices: ["Я уверен, что был другой выход", "Наверное, в этом был какой-то смысл"], next: { A: "28", B: "28" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "27" },
-            "28": { id: "28", text: "Знаешь, некоторые до сих пор считают того человека героем. Потому что он сам принял решение и не отступил.", choices: ["Я считаю, что такие решения нельзя принимать в одиночку", "Каждый сам вправе решать подобные вещи"], next: { A: "29", B: "29" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "28" },
-            "29": { id: "29", text: "Наверное, люди принимают такие решения, когда им кажется, что другого выхода уже нет.", choices: [], next: { A: "30", B: "30" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: null, noChoice: true },
-            "30": { id: "30", text: "А у тебя были моменты, когда казалось, что всё зашло слишком далеко?", choices: ["Даже в тяжёлых ситуациях можно найти выход", "Да, иногда казалось, что выхода действительно нет"], next: { A: "31", B: "31" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "30" },
-            "31": { id: "31", text: "Даже когда всё идёт плохо, некоторые всё равно продолжают верить, что впереди есть что-то хорошее.", choices: ["Наверное, это про меня", "Мне сложно так думать"], next: { A: "33", B: "33" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "31" },
-            "33": { id: "33", text: "Думаю, что многое зависит от окружения. Как ты думаешь, большинство людей добиваются успеха честно?", choices: ["Да, большинство всё-таки стараются поступать правильно", "Нет, многие готовы поступать нечестно ради выгоды"], next: { A: "34", B: "34" }, speaker: "✨", speakerName: "Хранитель", bg: "2930313233343536", diagnostic: "33" },
-            "34": { id: "34", text: "Вы вышли из комнаты, идя по коридору вы заходите в тупик.", choices: [], next: { A: "35", B: "35" }, speaker: "🗝️", speakerName: "...", bg: "7", diagnostic: null, noChoice: true },
-            "35": { id: "35", text: "Что будем делать? Вернёмся или поищем другой выход?", choices: ["Вернуться, пока не поздно ", "Искать другой выход, даже если это опасно "], next: { A: "36A", B: "36B" }, speaker: "✨", speakerName: "Хранитель", bg: "7", diagnostic: "35" },
-            "36A": { id: "36A", text: "Возвращаясь, вы увидели запертую дверь.", choices: [], next: { A: "37", B: "37" }, speaker: "🗝️", speakerName: "...", bg: "38", diagnostic: null, noChoice: true },
-            "36B": { id: "36B", text: "Вы обнаружили запертую дверь.", choices: [], next: { A: "37", B: "37" }, speaker: "🗝️", speakerName: "...", bg: "38", diagnostic: null, noChoice: true },
-            "37": { id: "37", text: "Ты пытаешься, ее открыть, но у тебя не получается. ", choices: ["Попробовать снова ", "Перестать пытаться "], next: { A: "38", B: "38" }, speaker: "🗝️", speakerName: "...", bg: "38", diagnostic: "37" },
-            "38": { id: "38", text: "Вдруг вы слышите тихую музыку, доносящуюся из-за двери.", choices: [], next: { A: "39", B: "39" }, speaker: "🗝️", speakerName: "...", bg: "38", diagnostic: null, noChoice: true },
-            "39": { id: "39", text: "Какая красивая музыка, будто уносит в светлое будущее. А какой ты видишь свою жизнь через несколько лет?", choices: ["У меня столько всего задуманного","Я предпочитаю не загадывать "], next: { A: "40", B: "40" }, speaker: "✨", speakerName: "Хранитель", bg: "394041", diagnostic: "39" },
-            "40": { id: "40", text: "Хранитель протягивает тебе светящийся камень.", choices: [], next: { A: "41", B: "41" }, speaker: "🗝️", speakerName: "...", bg: "4243", diagnostic: null, noChoice: true },
-            "41": { id: "41", text: "Этот камень поможет тебе во всех твоих начинаниях. Ты решил, что будешь делать, когда выйдешь отсюда?", choices: ["У меня есть план","Сложно ответить, не знаю"], next: { A: "42", B: "42" }, speaker: "✨", speakerName: "Хранитель", bg: "4243", diagnostic: "41" },
-            "42": { id: "42", text: "Главное найти человека, ради кого ты готов изменить все свои планы.", choices: ["У меня уже есть такой ","Не думаю, что кто-то сможет изменить мои решения"], next: { A: "43", B: "43" }, speaker: "✨", speakerName: "Хранитель", bg: "394041", diagnostic: "42" },
-            "43": { id: "43", text: "Дверь открывается. Ты чувствуешь свежий воздух.", choices: [], next: { A: "44", B: "44" }, speaker: "🗝️", speakerName: "...", bg: "46", diagnostic: null, noChoice: true },
-            "44": { id: "44", text: "Если вдруг тебе станет тяжело, ты знаешь где меня искать", choices: ["Спасибо, в случае чего обязательно обращусь", "Спасибо, но я справлюсь сам"], next: { A: "45", B: "45" }, speaker: "✨", speakerName: "Хранитель", bg: "46", diagnostic: "44"},
-            "45": { id: "45", text: "Ты прошёл все испытания. Поздравляю!", choices: [], next: { A: "end", B: "end" }, speaker: "✨", speakerName: "Хранитель", bg: "47", diagnostic: null, noChoice: true }
-        };
-
 
         function setBackground(bgKey) {
             const bgDiv = document.getElementById('backgroundLayer');
@@ -580,7 +564,7 @@
             setTimeout(function() { const overlay = document.getElementById('resultOverlay'); if (overlay) overlay.remove(); location.reload(); }, 3000);
         }
 
-        // ========== УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ УЧИТЕЛЯ ==========
+        // ========== УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ПСИХОЛОГА ==========
         async function updateTeacherUI() {
             if (!currentTeacher) return;
             const classes = await loadClasses(currentTeacher.id);
@@ -611,7 +595,7 @@
             } else { historyContainer.style.display = 'none'; }
             const tbody = document.getElementById('studentsTableBody');
             if (!tbody) return;
-            if (!currentClassId) { tbody.innerHTML = '</table><td colspan="6" style="text-align:center">Сначала создайте класс</td></tr>'; return; }
+            if (!currentClassId) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Сначала создайте класс</td></tr>'; return; }
             const classStudents = await loadStudents(currentClassId);
             if (classStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">Нет учеников</td></tr>'; return; }
             let rows = '';
@@ -756,6 +740,13 @@
         teacherLoginInput.addEventListener('input', checkStudentForm);
         teacherPasswordInput.addEventListener('input', checkStudentForm);
 
+        // Загружаем данные из БД перед запуском
+        const dataLoaded = await loadScalesAndScenes();
+        if (!dataLoaded) {
+            errorMsg.innerText = 'Ошибка загрузки данных. Обновите страницу.';
+            return;
+        }
+
         startBtn.onclick = async function() {
             errorMsg.innerText = '';
             if (currentRole === 'student') {
@@ -781,8 +772,8 @@
                 const password = teacherPasswordInput.value.trim();
                 if (login !== TEACHER_LOGIN || password !== TEACHER_PASSWORD) { errorMsg.innerText = 'Неверный логин или пароль'; return; }
                 let teacher = await loadTeacher(login);
-                if (!teacher) teacher = await createTeacher(login, 'Учитель');
-                if (!teacher) { errorMsg.innerText = 'Ошибка создания учителя'; return; }
+                if (!teacher) teacher = await createTeacher(login, 'Психолог');
+                if (!teacher) { errorMsg.innerText = 'Ошибка создания психолога'; return; }
                 currentTeacher = teacher;
                 const classes = await loadClasses(teacher.id);
                 currentTeacher.classes = classes;
